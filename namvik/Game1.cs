@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
+using MonoGame.Extended.ViewportAdapters;
 
 namespace namvik
 {
@@ -9,12 +11,14 @@ namespace namvik
     /// </summary>
     public class Game1 : Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        GraphicsDeviceManager _graphics;
+        public SpriteBatch _spriteBatch;
+        private Map _map;
+        private Camera2D _camera;
 
         public Game1()
         {
-            graphics = new GraphicsDeviceManager(this);
+            _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
 
@@ -29,6 +33,15 @@ namespace namvik
             // TODO: Add your initialization logic here
 
             base.Initialize();
+            _spriteBatch = new SpriteBatch(_graphics.GraphicsDevice);
+
+
+            var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 1920, 1080);
+            _camera = new Camera2D(viewportAdapter);
+
+
+            _map = new Map();
+            _map.Initialize(Content);
         }
 
         /// <summary>
@@ -37,8 +50,8 @@ namespace namvik
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            // Create a new SpriteBatch, which can be used to Draw textures.
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
         }
@@ -65,17 +78,50 @@ namespace namvik
             // TODO: Add your update logic here
 
             base.Update(gameTime);
+
+            var moveVector = new Vector2();
+
+            if (Keyboard.GetState().IsKeyDown(Keys.W))
+            {
+                moveVector += new Vector2(0, -1);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            {
+                moveVector += new Vector2(0, 1);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.A))
+            {
+                moveVector += new Vector2(-1, 0);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.D))
+            {
+                moveVector += new Vector2(1, 0);
+            }
+
+            if (moveVector.Length() > 0) {
+                moveVector.Normalize();
+            }
+
+            moveVector *= 10;
+            _camera.Position += moveVector;
         }
 
         /// <summary>
-        /// This is called when the game should draw itself.
+        /// This is called when the game should Draw itself.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+
+            _spriteBatch.Begin(transformMatrix: _camera.GetViewMatrix(), samplerState: SamplerState.PointClamp);
+
+            _map.Draw(_camera, _spriteBatch);
+
+
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
