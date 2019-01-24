@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2010
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "namvik", "namvik\namvik.csproj", "{F367DD5D-4930-45ED-9E25-FA550BD16F3E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F367DD5D-4930-45ED-9E25-FA550BD16F3E}.Debug|x86.ActiveCfg = Debug|x86
+		{F367DD5D-4930-45ED-9E25-FA550BD16F3E}.Debug|x86.Build.0 = Debug|x86
+		{F367DD5D-4930-45ED-9E25-FA550BD16F3E}.Release|x86.ActiveCfg = Release|x86
+		{F367DD5D-4930-45ED-9E25-FA550BD16F3E}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7C4DB594-9788-480A-B875-EE4983FF53AC}
+	EndGlobalSection
+EndGlobal
