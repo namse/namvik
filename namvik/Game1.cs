@@ -15,6 +15,7 @@ namespace namvik
         public SpriteBatch _spriteBatch;
         private Map _map;
         private Camera2D _camera;
+        private Character _character;
 
         public Game1()
         {
@@ -42,6 +43,9 @@ namespace namvik
 
             _map = new Map();
             _map.Initialize(Content);
+
+            _character = new Character();
+            _character.Initialize(Content);
         }
 
         /// <summary>
@@ -104,6 +108,8 @@ namespace namvik
 
             moveVector *= 10;
             _camera.Position += moveVector;
+
+            _character.Update();
         }
 
         /// <summary>
@@ -119,6 +125,8 @@ namespace namvik
             _spriteBatch.Begin(transformMatrix: _camera.GetViewMatrix(), samplerState: SamplerState.PointClamp);
 
             _map.Draw(_camera, _spriteBatch);
+
+            _character.Draw(_spriteBatch);
 
 
             _spriteBatch.End();
