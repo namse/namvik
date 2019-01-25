@@ -13,7 +13,7 @@ namespace namvik
     public class Character
     {
         private Texture2D _texture;
-        private Vector2 _position;
+        public Vector2 Position;
         public void Initialize(ContentManager content)
         {
             _texture = content.Load<Texture2D>("sprite/character");
@@ -46,12 +46,12 @@ namespace namvik
             }
 
             moveVector *= 10;
-            _position += moveVector;
+            Position += moveVector;
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, _position, Color.White);
+            spriteBatch.Draw(_texture, Position, Color.White);
         }
     }
 }

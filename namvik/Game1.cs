@@ -79,37 +79,16 @@ namespace namvik
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
-
             base.Update(gameTime);
 
-            var moveVector = new Vector2();
-
-            if (Keyboard.GetState().IsKeyDown(Keys.W))
-            {
-                moveVector += new Vector2(0, -1);
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.S))
-            {
-                moveVector += new Vector2(0, 1);
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.A))
-            {
-                moveVector += new Vector2(-1, 0);
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.D))
-            {
-                moveVector += new Vector2(1, 0);
-            }
-
-            if (moveVector.Length() > 0) {
-                moveVector.Normalize();
-            }
-
-            moveVector *= 10;
-            _camera.Position += moveVector;
-
             _character.Update();
+
+            FollowCameraTo(_character);
+        }
+
+        private void FollowCameraTo(Character target)
+        {
+            _camera.LookAt(target.Position);
         }
 
         /// <summary>
