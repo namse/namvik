@@ -86,7 +86,9 @@ namespace namvik
 
             base.Update(gameTime);
 
-            _character.Update();
+            var dt = 1 / 60f; // (float)gameTime.ElapsedGameTime.TotalSeconds
+            _map.Update(dt);
+            _character.Update(dt);
 
             FollowCameraTo(_character);
         }
@@ -110,7 +112,7 @@ namespace namvik
 
             _map.Draw(_camera, _spriteBatch);
 
-            _map.Update(gameTime);
+            //_map.Update(gameTime);
 
             _character.Draw(_spriteBatch);
 

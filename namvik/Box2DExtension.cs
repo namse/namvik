@@ -7,7 +7,7 @@ namespace namvik
     {
         public static Vector2 ToVector2(this Vec2 vec2)
         {
-            return new Vector2(vec2.X, vec2.Y);
+            return new Vector2(vec2.X.ToPixel(), vec2.Y.ToPixel());
         }
 
         public static Microsoft.Xna.Framework.Color ToXnaColor(this Box2DX.Dynamics.Color color)

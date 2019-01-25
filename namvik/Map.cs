@@ -178,13 +178,16 @@ namespace namvik
 
             var bodyDef = new BodyDef
             {
-                Position = new Vec2(x, y),
+                Position = new Vec2(x.ToMeter(), y.ToMeter()),
             };
 
             Body = Map.World.CreateBody(bodyDef);
 
             var polygonDef = new PolygonDef();
-            polygonDef.SetAsBox(width / 2, height / 2, new Vec2(width / 2, height / 2), 0);
+
+            var hx = (width / 2f).ToMeter();
+            var hy = (height / 2f).ToMeter();
+            polygonDef.SetAsBox(hx, hy, new Vec2(hx, hy), 0);
 
             Body.CreateShape(polygonDef);
         }
@@ -196,13 +199,17 @@ namespace namvik
         }
     }
 
-    class TileImageObject : TileRectangleObject
+    class TileImageObject : TileObject
     {
         public readonly int Gid;
+        public float Width;
+        public float Height;
 
-        public TileImageObject(float x, float y, float width, float height, int gid) : base(x, y, width, height)
+        public TileImageObject(float x, float y, float width, float height, int gid) : base(x, y)
         {
             Gid = gid;
+            Width = width;
+            Height = height;
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
@@ -223,7 +230,7 @@ namespace namvik
 
             var bodyDef = new BodyDef
             {
-                Position = new Vec2(x, y),
+                Position = new Vec2(x.ToMeter(), y.ToMeter()),
             };
 
             Body = Map.World.CreateBody(bodyDef);
@@ -507,19 +514,19 @@ namespace namvik
 
             var gravity = new Vec2(0f, 10f);
 
-            World = new World(worldAabb, gravity, true);
+            World = new World(worldAabb, gravity, false);
 
             var box2DDebugDraw = new Box2DDebugDraw(spriteBatch)
             {
-                Flags = DebugDraw.DrawFlags.Shape,
+                //Flags = DebugDraw.DrawFlags.Shape,
             };
 
             World.SetDebugDraw(box2DDebugDraw);
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(float dt)
         {
-            World.Step((float)gameTime.ElapsedGameTime.TotalSeconds / 1000f, 8, 3);
+            World.Step(dt, 8, 3);
         }
 
         public void Draw(Camera2D camera, SpriteBatch spriteBatch)

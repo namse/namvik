@@ -7,7 +7,7 @@ namespace namvik
     {
         public static Vec2 ToVec2(this Vector2 vector2)
         {
-            return new Vec2(vector2.X, vector2.Y);
+            return new Vec2(vector2.X.ToMeter(), vector2.Y.ToMeter());
         }
     }
 }
