@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
@@ -39,6 +40,8 @@ namespace namvik
             _graphics.PreferredBackBufferWidth = 1920;
             _graphics.ApplyChanges();
 
+            TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d);
+
             _spriteBatch = new SpriteBatch(_graphics.GraphicsDevice);
 
 
@@ -51,6 +54,8 @@ namespace namvik
 
             _character = new Character();
             _character.Initialize(Content);
+
+            _camera.LookAt(_character.Position);
         }
 
         /// <summary>
@@ -86,16 +91,20 @@ namespace namvik
 
             base.Update(gameTime);
 
-            var dt = 1 / 60f; // (float)gameTime.ElapsedGameTime.TotalSeconds
+            var dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
             _map.Update(dt);
             _character.Update(dt);
 
-            FollowCameraTo(_character);
+            FollowCameraTo(_character, dt);
         }
 
-        private void FollowCameraTo(Character target)
+        private void FollowCameraTo(Character target, float dt)
         {
-            _camera.LookAt(target.Position);
+            var interpolationFactor = Math.Min(10f * dt, 1);
+            var size = _camera.BoundingRectangle.Size;
+            var cameraCenter = _camera.Position + new Vector2(size.Width, size.Height) / 2;
+            var nextCameraPosition = target.Position * interpolationFactor + cameraCenter * (1 - interpolationFactor);
+            _camera.LookAt(nextCameraPosition);
         }
 
         /// <summary>
@@ -104,6 +113,7 @@ namespace namvik
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+
             _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
@@ -112,10 +122,7 @@ namespace namvik
 
             _map.Draw(_camera, _spriteBatch);
 
-            //_map.Update(gameTime);
-
             _character.Draw(_spriteBatch);
-
 
             _spriteBatch.End();
 
