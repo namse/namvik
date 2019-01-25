@@ -34,6 +34,11 @@ namespace namvik
             // TODO: Add your initialization logic here
 
             base.Initialize();
+
+            _graphics.PreferredBackBufferHeight = 1080;
+            _graphics.PreferredBackBufferWidth = 1920;
+            _graphics.ApplyChanges();
+
             _spriteBatch = new SpriteBatch(_graphics.GraphicsDevice);
 
 
