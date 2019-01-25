@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Linq;
 using System.Xml;
+using Box2DX.Collision;
+using Box2DX.Common;
+using Box2DX.Dynamics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
-using MonoGame.Extended.Tiled;
-using MonoGame.Extended.Tiled.Graphics;
+using Color = Microsoft.Xna.Framework.Color;
+using Math = System.Math;
 
 namespace namvik
 {
@@ -158,7 +160,7 @@ namespace namvik
 
         public virtual void Draw(SpriteBatch spriteBatch)
         {
-            
+
         }
     }
 
@@ -166,17 +168,31 @@ namespace namvik
     {
         public float Width;
         public float Height;
+        public Body Body;
 
         public TileRectangleObject(float x, float y, float width, float height) : base(x, y)
         {
             Width = width;
             Height = height;
+
+
+            var bodyDef = new BodyDef
+            {
+                Position = new Vec2(x, y),
+            };
+
+            Body = Map.World.CreateBody(bodyDef);
+
+            var polygonDef = new PolygonDef();
+            polygonDef.SetAsBox(width / 2, height / 2, new Vec2(width / 2, height / 2), 0);
+
+            Body.CreateShape(polygonDef);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
-            spriteBatch.DrawRectangle(new RectangleF(X, Y, Width, Height), Color.Red);
+            spriteBatch.DrawRectangle(new Vector2(X, Y),  new Size2(Width, Height), Color.Red);
         }
     }
 
@@ -199,10 +215,225 @@ namespace namvik
     class TilePolygonObject : TileObject
     {
         public TilePolygon Polygon;
+        public Body Body;
         public TilePolygonObject(float x, float y, TilePolygon polygon): base(x, y) {
             X = x;
             Y = y;
             Polygon = polygon;
+
+            var bodyDef = new BodyDef
+            {
+                Position = new Vec2(x, y),
+            };
+
+            Body = Map.World.CreateBody(bodyDef);
+
+            var dividedPolygon = DividePolygon(polygon.Points);
+
+            foreach (var points in dividedPolygon)
+            {
+                var polygonDef = new PolygonDef
+                {
+                    VertexCount = points.Count,
+                    Vertices = points.Select(point => point.ToVec2()).ToArray()
+                };
+
+                Body.CreateShape(polygonDef);
+            }
+        }
+
+        public Boolean IsConvexPolygon(List<Vector2> points)
+        {
+            for (var i = 0; i < points.Count; i += 1)
+            {
+                var pointA = points[i];
+                var pointB = points[(i + 1) % points.Count];
+                var pointC = points[(i + 2) % points.Count];
+
+                if (!IsClockWise(pointA, pointB, pointC))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public List<List<Vector2>> DivideConvexPolygon(List<Vector2> points)
+        {
+            var chunkedPoints = new List<List<Vector2>>();
+            var firstPoint = points[0];
+            // devide
+            {
+                var pointChunk = new List<Vector2>();
+                for (var i = 1; i < points.Count; i += 1)
+                {
+                    var point = points[i];
+                    pointChunk.Add(point);
+
+                    if (pointChunk.Count >= 6)
+                    {
+                        chunkedPoints.Add(pointChunk);
+                        pointChunk = new List<Vector2>();
+                    }
+                }
+
+                if (pointChunk.Count > 0)
+                {
+                    chunkedPoints.Add(pointChunk);
+                }
+            }
+
+            // insert
+            for (var i = 0; i < chunkedPoints.Count; i += 1)
+            {
+                var pointChunk = chunkedPoints[i];
+                pointChunk.Insert(0, firstPoint);
+                if (i >= 1)
+                {
+                    var lastPointChunk = chunkedPoints[i - 1];
+                    pointChunk.Insert(1, lastPointChunk.Last());
+                }
+            }
+
+            return chunkedPoints;
+        }
+
+        public Boolean IsClockWise(Vector2 pointA, Vector2 pointB, Vector2 pointC)
+        {
+            var v1x = pointB.X - pointC.X;
+            var v1y = pointB.Y - pointC.Y;
+            var v2x = pointA.X - pointC.X;
+            var v2y = pointA.Y - pointC.Y;
+
+            var angle = Math.Atan2(v1x, v1y) - Math.Atan2(v2x, v2y);
+            return angle >= Math.PI || angle < 0;
+        }
+
+        public Boolean IsLeftGoingLineContactWithLine(Vector2 startPoint, Vector2 pointA, Vector2 pointB)
+        {
+            var bigY = Math.Max(pointA.Y, pointB.Y);
+            var smallY = Math.Min(pointA.Y, pointB.Y);
+            var bigX = Math.Max(pointA.X, pointB.X);
+            var smallX = Math.Min(pointA.X, pointB.X);
+
+            if (pointA.X == pointB.X) {
+                return smallY <= startPoint.Y && startPoint.Y <= bigY;
+            }
+            if (pointA.Y == pointB.Y) {
+                return pointA.Y == startPoint.Y;
+            }
+
+            var a = (pointA.Y - pointB.Y) / (pointA.X - pointB.X);
+            var b = pointA.Y - (pointA.Y - pointB.Y) / (pointA.X - pointB.X) * pointA.X;
+
+            var xOnLine = (startPoint.Y - b) / a;
+
+            return xOnLine <= startPoint.X && smallX <= xOnLine && xOnLine <= bigX;
+        }
+
+        public Boolean IsPointInPolygon(Vector2 target, List<Vector2> points)
+        {
+            var contactCount = 0;
+            for (var i = 0; i < points.Count; i += 1)
+            {
+                var pointA = points[i];
+                var pointB = points[(i + 1) % points.Count];
+                if (IsLeftGoingLineContactWithLine(target, pointA, pointB)) {
+                    contactCount += 1;
+                }
+            }
+            return contactCount % 2 == 1;
+        }
+
+        public List<List<Vector2>> DividePolygonByLine(int indexA, int indexB, List<Vector2> points)
+        {
+            if (indexB < indexA)
+            {
+                int temp = indexB;
+                indexB = indexA;
+                indexA = temp;
+            }
+            var nextPolygonA = points.Skip(indexA).Take(indexB - indexA + 1).ToList();
+
+            var nextPolygonB = new List<Vector2>();
+            for (var j = 0; j <= indexA; j += 1)
+            {
+                nextPolygonB.Add(points[j]);
+            }
+            for (var j = indexB; j < points.Count; j += 1)
+            {
+                nextPolygonB.Add(points[j]);
+            }
+
+            return DividePolygon(nextPolygonA).Concat(DividePolygon((nextPolygonB))).ToList();
+        }
+
+        public Boolean IsPolygonClockWise(List<Vector2> points)
+        {
+            var sum = 0f;
+            for (var i = 0; i < points.Count; i += 1)
+            {
+                var indexA = i;
+                var indexB = (i + 1) % points.Count;
+
+                var pointA = points[indexA];
+                var pointB = points[indexB];
+
+                sum += (pointB.X - pointA.X) * (pointB.Y + pointA.Y);
+            }
+
+            return sum < 0;
+        }
+
+        public List<List<Vector2>> DividePolygon(List<Vector2> points)
+        {
+            if (points.Count == 3)
+            {
+                return new List<List<Vector2>>{ points };
+            }
+            if (IsConvexPolygon(points))
+            {
+                return DivideConvexPolygon(points);
+            }
+
+            var isPolygonClockWise = IsPolygonClockWise(points);
+
+            if (points.Count == 15)
+            {
+                Console.WriteLine("sex");
+            }
+
+            for (var i = 0; i < points.Count; i += 1)
+            {
+                var indexA = i;
+                var indexB = (i + 1) % points.Count;
+                var indexC = (i + 2) % points.Count;
+
+                var pointA = points[indexA];
+                var pointB = points[indexB];
+                var pointC = points[indexC];
+
+                var isTriangleInDifferentWiseWithPolygon = IsClockWise(pointA, pointB, pointC) != isPolygonClockWise;
+
+                if (isTriangleInDifferentWiseWithPolygon)
+                {
+                    continue;
+                }
+
+                var trianglePoints = new List<Vector2>
+                {
+                    pointA,
+                    pointB,
+                    pointC,
+                };
+                var isAnyPointInsideOfTriangle = points.Except(trianglePoints)
+                        .Any(point => IsPointInPolygon(point, trianglePoints));
+                if (!isAnyPointInsideOfTriangle)
+                {
+                    return DividePolygonByLine(indexA, indexC, points);
+                }
+            }
+            throw new Exception("no way");
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -235,8 +466,12 @@ namespace namvik
         private List<TileSet> _tileSetList = new List<TileSet>();
         private List<TileObjectGroup> _tileObjectGroups = new List<TileObjectGroup>();
 
-        public void Initialize(ContentManager content)
+        public static World World;
+
+        public void Initialize(ContentManager content, SpriteBatch spriteBatch)
         {
+            InitializeWorld(spriteBatch);
+
             var doc = new XmlDocument();
             var reader = new XmlTextReader("Content/map/map1.tmx");
             doc.Load(reader);
@@ -262,6 +497,29 @@ namespace namvik
                 }
             }
             Console.WriteLine(_tileSetList);
+        }
+
+        public void InitializeWorld(SpriteBatch spriteBatch)
+        {
+            var worldAabb = new AABB();
+            worldAabb.LowerBound.Set(float.NegativeInfinity, float.NegativeInfinity);
+            worldAabb.UpperBound.Set(float.PositiveInfinity, float.PositiveInfinity);
+
+            var gravity = new Vec2(0f, 10f);
+
+            World = new World(worldAabb, gravity, true);
+
+            var box2DDebugDraw = new Box2DDebugDraw(spriteBatch)
+            {
+                Flags = DebugDraw.DrawFlags.Shape,
+            };
+
+            World.SetDebugDraw(box2DDebugDraw);
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            World.Step((float)gameTime.ElapsedGameTime.TotalSeconds / 1000f, 8, 3);
         }
 
         public void Draw(Camera2D camera, SpriteBatch spriteBatch)

@@ -47,7 +47,7 @@ namespace namvik
 
 
             _map = new Map();
-            _map.Initialize(Content);
+            _map.Initialize(Content, _spriteBatch);
 
             _character = new Character();
             _character.Initialize(Content);
@@ -109,6 +109,8 @@ namespace namvik
             _spriteBatch.Begin(transformMatrix: _camera.GetViewMatrix(), samplerState: SamplerState.PointClamp);
 
             _map.Draw(_camera, _spriteBatch);
+
+            _map.Update(gameTime);
 
             _character.Draw(_spriteBatch);
 
