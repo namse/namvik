@@ -172,6 +172,12 @@ namespace namvik
             Width = width;
             Height = height;
         }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            base.Draw(spriteBatch);
+            spriteBatch.DrawRectangle(new RectangleF(X, Y, Width, Height), Color.Red);
+        }
     }
 
     class TileImageObject : TileRectangleObject
@@ -185,7 +191,7 @@ namespace namvik
         public override void Draw(SpriteBatch spriteBatch)
         {
             var texture = TileImage.GetTexture(Gid);
-            spriteBatch.Draw(texture, new Vector2(X, Y), Color.White);
+            spriteBatch.Draw(texture, new Vector2(X, Y - Height), Color.White);
         }
     }
 
@@ -197,6 +203,12 @@ namespace namvik
             X = x;
             Y = y;
             Polygon = polygon;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            base.Draw(spriteBatch);
+            spriteBatch.DrawPolygon(new Vector2(X, Y), Polygon.Points.ToArray(), Color.Red);
         }
     }
 
@@ -210,7 +222,7 @@ namespace namvik
             {
                 var strings = pointString.Split(',');
                 var x = float.Parse(strings[0]);
-                var y = float.Parse(strings[0]);
+                var y = float.Parse(strings[1]);
                 return new Vector2(x, y);
             }).ToList();
         }
