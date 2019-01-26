@@ -45,6 +45,7 @@ namespace namvik
             return Texture2DMap.TryGetValue(gid, out var value) ? value : null;
         }
     }
+
     class Tile
     {
         public int Id;
@@ -181,6 +182,7 @@ namespace namvik
         public float Width;
         public float Height;
         public Body Body;
+        private PolygonDef _polygonDef;
 
         public TileRectangleObject(float x, float y, float width, float height) : base(x, y)
         {
@@ -195,13 +197,13 @@ namespace namvik
 
             Body = Map.World.CreateBody(bodyDef);
 
-            var polygonDef = new PolygonDef();
+            _polygonDef = new PolygonDef();
 
             var hx = (width / 2f).ToMeter();
             var hy = (height / 2f).ToMeter();
-            polygonDef.SetAsBox(hx, hy, new Vec2(hx, hy), 0);
+            _polygonDef.SetAsBox(hx, hy, new Vec2(hx, hy), 0);
 
-            Body.CreateShape(polygonDef);
+            Body.CreateShape(_polygonDef);
 
             Body.SetUserData(this);
         }
@@ -209,7 +211,9 @@ namespace namvik
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
-            spriteBatch.DrawRectangle(new Vector2(X, Y),  new Size2(Width, Height), Color.Red);
+            var physicsPolygons = _polygonDef.Vertices.Take(_polygonDef.VertexCount).Select(vec2 => vec2.ToVector2()).ToArray();
+            spriteBatch.DrawPolygon(Body.GetPosition().ToVector2(), physicsPolygons, Color.GreenYellow, 2f);
+            spriteBatch.DrawRectangle(new Vector2(X, Y), new Size2(Width, Height), Color.Red);
         }
     }
 
@@ -237,6 +241,7 @@ namespace namvik
     {
         public TilePolygon Polygon;
         public Body Body;
+        private readonly List<PolygonDef> _polygonDefs;
         public TilePolygonObject(float x, float y, TilePolygon polygon): base(x, y) {
             X = x;
             Y = y;
@@ -251,16 +256,17 @@ namespace namvik
 
             var dividedPolygon = DividePolygon(polygon.Points);
 
-            foreach (var points in dividedPolygon)
+            _polygonDefs = dividedPolygon.Select(points =>
             {
                 var polygonDef = new PolygonDef
                 {
                     VertexCount = points.Count,
                     Vertices = points.Select(point => point.ToVec2()).ToArray()
                 };
+                return polygonDef;
+            }).ToList();
 
-                Body.CreateShape(polygonDef);
-            }
+            _polygonDefs.ForEach(def => { Body.CreateShape(def); });
 
             Body.SetUserData(this);
         }
@@ -462,6 +468,13 @@ namespace namvik
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
+
+            _polygonDefs.ForEach(polygonDef =>
+            {
+                var physicsPolygons = polygonDef.Vertices.Take(polygonDef.VertexCount).Select(vec2 => vec2.ToVector2()).ToArray();
+                spriteBatch.DrawPolygon(Body.GetPosition().ToVector2(), physicsPolygons, Color.GreenYellow, 2f);
+            });
+
             spriteBatch.DrawPolygon(new Vector2(X, Y), Polygon.Points.ToArray(), Color.Red);
         }
     }
