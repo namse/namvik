@@ -18,11 +18,12 @@ namespace namvik
         private Texture2D _texture;
         public Vector2 Position;
         private Body _body;
-        private readonly float _maxVelocityX = 2f;
-        private readonly float _accelerationX = 8f;
+        private readonly float _maxVelocityX = 480f.ToMeter();
+        private readonly float _accelerationX = 60f.ToMeter();
         private bool _isOnGround;
         private readonly float _maximumJumpHeight = 230f.ToMeter();
         private List<PolygonDef> _polygonDefs = new List<PolygonDef>();
+        private float _friction = 0.8f;
         public void Initialize(ContentManager content)
         {
             _texture = content.Load<Texture2D>("sprite/character");
@@ -43,7 +44,7 @@ namespace namvik
             polygonDef.SetAsBox(hx, hy, center: new Vec2(hx, hy), angle: 0);
 
             polygonDef.Density = 0.001f;
-            polygonDef.Friction = 0.8f;
+            polygonDef.Friction = _friction;
             polygonDef.Restitution = 0;
 
             _body.CreateShape(polygonDef);
@@ -122,11 +123,16 @@ namespace namvik
             if (Keyboard.GetState().IsKeyDown(Keys.Left) || Keyboard.GetState().IsKeyDown(Keys.Right))
             {
                 var isLeft = Keyboard.GetState().IsKeyDown(Keys.Left);
-                var accelerationX = isLeft ? -_accelerationX : _accelerationX;
 
                 var velocity = _body.GetLinearVelocity();
 
-                velocity.X += dt * accelerationX;
+                var dax = (_accelerationX + _friction * _body.GetWorld().Gravity.Y);
+                if (isLeft)
+                {
+                    dax = -dax;
+                }
+
+                velocity.X += dt * dax;
 
                 if (Math.Abs(velocity.X) > _maxVelocityX)
                 {
