@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Xml;
 using Box2DX.Collision;
 using Box2DX.Common;
@@ -20,7 +21,8 @@ namespace namvik
         private readonly float _maxVelocityX = 2f;
         private readonly float _accelerationX = 8f;
         private bool _isOnGround;
-        private readonly float _maximumJumpHeight = 220f.ToMeter();
+        private readonly float _maximumJumpHeight = 230f.ToMeter();
+        private List<PolygonDef> _polygonDefs = new List<PolygonDef>();
         public void Initialize(ContentManager content)
         {
             _texture = content.Load<Texture2D>("sprite/character");
@@ -45,6 +47,7 @@ namespace namvik
             polygonDef.Restitution = 0;
 
             _body.CreateShape(polygonDef);
+            _polygonDefs.Add(polygonDef);
 
             CreateNonFrictionBorder();
 
@@ -72,6 +75,7 @@ namespace namvik
             polygonDef.Restitution = 0;
 
             _body.CreateShape(polygonDef);
+            _polygonDefs.Add(polygonDef);
         }
 
 
@@ -146,6 +150,11 @@ namespace namvik
             var maybeWorks = new Vector2((int)Position.X, (int)Position.Y);
             spriteBatch.Draw(_texture, maybeWorks, Color.White);
             //spriteBatch.Draw(_texture, Position, Color.White);
+
+            _polygonDefs.ForEach(polygonDef =>
+            {
+                polygonDef.Draw(_body.GetPosition(), spriteBatch);
+            });
         }
     }
 }

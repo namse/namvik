@@ -147,11 +147,13 @@ namespace namvik
             {
                 var width = float.Parse(xmlElement.GetAttribute("width"));
                 var height = float.Parse(xmlElement.GetAttribute("height"));
+                var hasRotation = xmlElement.HasAttribute("rotation");
+                var rotation = hasRotation ? float.Parse(xmlElement.GetAttribute("rotation")) : 0;
                 if (xmlElement.HasAttribute("gid")) {
                     var gid = int.Parse(xmlElement.GetAttribute("gid"));
                     return new TileImageObject(x, y, width, height, gid);
                 }
-                return new TileRectangleObject(x, y, width, height);
+                return new TileRectangleObject(x, y, width, height, rotation);
             }
             TilePolygon polygon = null;
             foreach (XmlElement item in xmlElement.ChildNodes)
@@ -181,13 +183,24 @@ namespace namvik
     {
         public float Width;
         public float Height;
+        private float _angleDegree;
         public Body Body;
         private PolygonDef _polygonDef;
+        private List<Vector2> _points;
 
-        public TileRectangleObject(float x, float y, float width, float height) : base(x, y)
+        public TileRectangleObject(float x, float y, float width, float height, float angleDegree) : base(x, y)
         {
             Width = width;
             Height = height;
+            _angleDegree = angleDegree;
+
+            _points = new List<Vector2>
+            {
+                new Vector2(0, 0),
+                new Vector2(0, 0 + height),
+                new Vector2( width, height),
+                new Vector2(width, 0),
+            }.Select(point => point.Rotate(angleDegree.ToRadius())).ToList();
 
 
             var bodyDef = new BodyDef
@@ -201,7 +214,13 @@ namespace namvik
 
             var hx = (width / 2f).ToMeter();
             var hy = (height / 2f).ToMeter();
-            _polygonDef.SetAsBox(hx, hy, new Vec2(hx, hy), 0);
+
+            var angleRadian = _angleDegree.ToRadius();
+
+            var rotatedHx = (float)(Math.Cos(angleRadian) * hx - Math.Sin(angleRadian) * hy);
+            var rotatedHy = (float)(Math.Sin(angleRadian) * hx + Math.Cos(angleRadian) * hy);
+
+            _polygonDef.SetAsBox(hx, hy, new Vec2(rotatedHx, rotatedHy), angleRadian);
 
             Body.CreateShape(_polygonDef);
 
@@ -211,9 +230,11 @@ namespace namvik
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
+
             var physicsPolygons = _polygonDef.Vertices.Take(_polygonDef.VertexCount).Select(vec2 => vec2.ToVector2()).ToArray();
             spriteBatch.DrawPolygon(Body.GetPosition().ToVector2(), physicsPolygons, Color.GreenYellow, 2f);
-            spriteBatch.DrawRectangle(new Vector2(X, Y), new Size2(Width, Height), Color.Red);
+
+            spriteBatch.DrawPolygon(new Vector2(X, Y), _points.ToArray(), Color.Red);
         }
     }
 
