@@ -19,20 +19,17 @@ namespace namvik
         public Vector2 Position;
         private Body _body;
         private readonly float _maxVelocityX = 480f.ToMeter();
-        private readonly float _accelerationX = 60f.ToMeter();
+        private readonly float _accelerationX = 600f.ToMeter();
         private bool _isOnGround;
         private readonly float _maximumJumpHeight = 230f.ToMeter();
-        private List<PolygonDef> _polygonDefs = new List<PolygonDef>();
-        private float _friction = 0.8f;
+        private readonly List<PolygonDef> _polygonDefs = new List<PolygonDef>();
         private Shape _mainBodyShape;
-
-        private bool shouldUpdateVeolictyX;
-        private float nextVelocityX;
+        private readonly Dictionary<uint, ContactPoint> _contactPoints = new Dictionary<uint, ContactPoint>();
 
         public void Initialize(ContentManager content)
         {
             _texture = content.Load<Texture2D>("sprite/character");
-            Position = new Vector2(246.2743f, -1506.1f);
+            Position = new Vector2(246.2743f, -1806.1f);
 
             var bodyDef = new BodyDef
             {
@@ -49,39 +46,28 @@ namespace namvik
             polygonDef.SetAsBox(hx, hy, center: new Vec2(hx, hy), angle: 0);
 
             polygonDef.Density = 0.001f;
-            polygonDef.Friction = _friction;
+            polygonDef.Friction = 0f;
+            polygonDef.Restitution = 0f;
 
             _mainBodyShape = _body.CreateShape(polygonDef);
             _polygonDefs.Add(polygonDef);
 
-            CreateNonFrictionBorder();
-
             _body.SetMassFromShapes();
+
+            _body.SetUserData(this);
 
             Map.World.SetContactListener(this);
         }
 
-        public void CreateNonFrictionBorder()
+        public override void Remove(ContactPoint point)
         {
-            var hx = (_texture.Width / 2f).ToMeter();
-            var halfPixel = 0.5f.ToMeter();
-            var hy = (_texture.Height / 2f).ToMeter() - halfPixel;
+            base.Remove(point);
 
-            CreateNonFrictionBody(halfPixel, hy, center: new Vec2(hx * 2 + halfPixel, hy));
-            CreateNonFrictionBody(halfPixel, hy, center: new Vec2(-halfPixel, hy));
+            if (_contactPoints.ContainsKey(point.ID.Key))
+            {
+                _contactPoints.Remove(point.ID.Key);
+            }
         }
-
-        public void CreateNonFrictionBody(float hx, float hy, Vec2 center)
-        {
-            var polygonDef = new PolygonDef();
-            polygonDef.SetAsBox(hx, hy, center: center, angle: 0);
-            polygonDef.Density = 0f;
-            polygonDef.Friction = 0f;
-
-            _body.CreateShape(polygonDef);
-            _polygonDefs.Add(polygonDef);
-        }
-
 
         public override void Add(ContactPoint point)
         {
@@ -93,6 +79,11 @@ namespace namvik
                 return;
             }
 
+            if (!_contactPoints.ContainsKey(point.ID.Key))
+            {
+                _contactPoints.Add(point.ID.Key, point);
+            }
+
             var opposite = point.Shape1.GetBody() == _body ? point.Shape2.GetBody() : point.Shape1.GetBody();
 
             var userData = opposite.GetUserData();
@@ -101,23 +92,19 @@ namespace namvik
                 if (point.Normal.Y < 0)
                 {
                     _isOnGround = true;
-                    //var position = _body.GetPosition();
-                    //position -= point.Normal * point.Separation;
-                    //_body.SetXForm(position, _body.GetAngle());
-
-                    shouldUpdateVeolictyX = true;
-                    nextVelocityX = _body.GetLinearVelocity().X;
                 }
             }
         }
 
         public void Update(float dt)
         {
-            if (shouldUpdateVeolictyX)
+            if (_contactPoints.Count == 0)
             {
-                _body.SetVelocityX(nextVelocityX);
-                shouldUpdateVeolictyX = false;
+                var vy = _body.GetLinearVelocity().Y;
+                vy += dt * 9.8f;
+                _body.SetVelocityY(vy);
             }
+
             if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
                 if (_isOnGround)
@@ -133,21 +120,19 @@ namespace namvik
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Left) || Keyboard.GetState().IsKeyDown(Keys.Right))
             {
-                var isLeft = Keyboard.GetState().IsKeyDown(Keys.Left);
-
+                var moveDirection = Keyboard.GetState().IsKeyDown(Keys.Left) ? -1 : 1;
                 var velocity = _body.GetLinearVelocity();
 
-                var dax = (_accelerationX + _friction * _body.GetWorld().Gravity.Y);
-                if (isLeft)
+                if ((moveDirection < 0 && velocity.X > 0) || (moveDirection > 0 && velocity.X < 0))
                 {
-                    dax = -dax;
+                    velocity.X = 0;
                 }
-
-                velocity.X += dt * dax;
+                
+                velocity.X += dt * moveDirection * _accelerationX;
 
                 if (Math.Abs(velocity.X) > _maxVelocityX)
                 {
-                    velocity.X = isLeft ? -_maxVelocityX : _maxVelocityX;
+                    velocity.X = moveDirection * _maxVelocityX;
                 }
                 _body.SetLinearVelocity(velocity);
             }

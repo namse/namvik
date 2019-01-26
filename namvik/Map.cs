@@ -579,10 +579,10 @@ namespace namvik
         public void InitializeWorld(SpriteBatch spriteBatch)
         {
             var worldAabb = new AABB();
-            worldAabb.LowerBound.Set(float.NegativeInfinity, float.NegativeInfinity);
-            worldAabb.UpperBound.Set(float.PositiveInfinity, float.PositiveInfinity);
+            worldAabb.LowerBound.Set(-100f, -100f);
+            worldAabb.UpperBound.Set(100f, 100f);
 
-            var gravity = new Vec2(0f, 10f);
+            var gravity = new Vec2(0f, 0f);
 
             World = new World(worldAabb, gravity, false);
 
