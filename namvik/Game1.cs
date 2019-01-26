@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ServiceModel.Activities.Configuration;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -36,16 +37,16 @@ namespace namvik
 
             base.Initialize();
 
-            _graphics.PreferredBackBufferHeight = 1080;
-            _graphics.PreferredBackBufferWidth = 1920;
+            var windowWidth = 1000;
+            var windowHeight = 1000;
+            _graphics.PreferredBackBufferWidth = windowWidth;
+            _graphics.PreferredBackBufferHeight = windowHeight;
             _graphics.ApplyChanges();
-
-            TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d);
 
             _spriteBatch = new SpriteBatch(_graphics.GraphicsDevice);
 
 
-            var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 1920, 1080);
+            var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, windowWidth, windowHeight);
             _camera = new Camera2D(viewportAdapter);
 
 
@@ -92,7 +93,12 @@ namespace namvik
             base.Update(gameTime);
 
             var dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            _map.Update(dt);
+            var physicsUpdateFrequency = 3;
+            for (var i = 0; i < physicsUpdateFrequency; i += 1)
+            {
+                _map.Update(dt / (float)physicsUpdateFrequency);
+            }
+            
             _character.Update(dt);
 
             FollowCameraTo(_character, dt);

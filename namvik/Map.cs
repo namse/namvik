@@ -106,15 +106,27 @@ namespace namvik
                 {
                     var tileObject = TileObject.Parse(childElement);
                     TileObjects.Add(tileObject);
+
+                    if (Name == "collision")
+                    {
+                        tileObject.TileGorup = TileGroup.Collision;
+                    }
                 }
             }
         }
     }
 
+    public enum TileGroup
+    {
+        Collision,
+    }
+
+
     class TileObject
     {
         public float X;
         public float Y;
+        public TileGroup TileGorup;
 
         public TileObject(float x, float y)
         {
@@ -190,6 +202,8 @@ namespace namvik
             polygonDef.SetAsBox(hx, hy, new Vec2(hx, hy), 0);
 
             Body.CreateShape(polygonDef);
+
+            Body.SetUserData(this);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -247,9 +261,11 @@ namespace namvik
 
                 Body.CreateShape(polygonDef);
             }
+
+            Body.SetUserData(this);
         }
 
-        public Boolean IsConvexPolygon(List<Vector2> points)
+        public bool IsConvexPolygon(List<Vector2> points)
         {
             for (var i = 0; i < points.Count; i += 1)
             {
@@ -305,7 +321,7 @@ namespace namvik
             return chunkedPoints;
         }
 
-        public Boolean IsClockWise(Vector2 pointA, Vector2 pointB, Vector2 pointC)
+        public bool IsClockWise(Vector2 pointA, Vector2 pointB, Vector2 pointC)
         {
             var v1x = pointB.X - pointC.X;
             var v1y = pointB.Y - pointC.Y;
@@ -316,7 +332,7 @@ namespace namvik
             return angle >= Math.PI || angle < 0;
         }
 
-        public Boolean IsLeftGoingLineContactWithLine(Vector2 startPoint, Vector2 pointA, Vector2 pointB)
+        public bool IsLeftGoingLineContactWithLine(Vector2 startPoint, Vector2 pointA, Vector2 pointB)
         {
             var bigY = Math.Max(pointA.Y, pointB.Y);
             var smallY = Math.Min(pointA.Y, pointB.Y);
@@ -338,7 +354,7 @@ namespace namvik
             return xOnLine <= startPoint.X && smallX <= xOnLine && xOnLine <= bigX;
         }
 
-        public Boolean IsPointInPolygon(Vector2 target, List<Vector2> points)
+        public bool IsPointInPolygon(Vector2 target, List<Vector2> points)
         {
             var contactCount = 0;
             for (var i = 0; i < points.Count; i += 1)
@@ -375,7 +391,7 @@ namespace namvik
             return DividePolygon(nextPolygonA).Concat(DividePolygon((nextPolygonB))).ToList();
         }
 
-        public Boolean IsPolygonClockWise(List<Vector2> points)
+        public bool IsPolygonClockWise(List<Vector2> points)
         {
             var sum = 0f;
             for (var i = 0; i < points.Count; i += 1)
@@ -466,8 +482,6 @@ namespace namvik
         }
     }
 
-
-
     public class Map
     {
         private List<TileSet> _tileSetList = new List<TileSet>();
@@ -500,6 +514,8 @@ namespace namvik
                         var tileObjectGroup = new TileObjectGroup();
                         tileObjectGroup.Parse(childNode);
                         _tileObjectGroups.Add(tileObjectGroup);
+
+                        
                         break;
                 }
             }
