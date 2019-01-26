@@ -42,6 +42,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Box2DDebugDraw.cs" />
+    <Compile Include="FpsPrinter.cs" />
+    <Compile Include="GameObject.cs" />
     <Compile Include="ScaleBetweenPixelAndMeter.cs" />
     <Compile Include="Vector2Extension.cs" />
     <Compile Include="Box2DExtension.cs" />

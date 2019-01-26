@@ -8,9 +8,6 @@ using MonoGame.Extended.ViewportAdapters;
 
 namespace namvik
 {
-    /// <summary>
-    /// This is the main type for your game.
-    /// </summary>
     public class Game1 : Game
     {
         GraphicsDeviceManager _graphics;
@@ -18,6 +15,7 @@ namespace namvik
         private Map _map;
         private Camera2D _camera;
         private Character _character;
+        private FpsPrinter _fpsPrinter;
 
         public Game1()
         {
@@ -25,12 +23,6 @@ namespace namvik
             Content.RootDirectory = "Content";
         }
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
@@ -57,12 +49,11 @@ namespace namvik
             _character.Initialize(Content);
 
             _camera.LookAt(_character.Position);
+
+            _fpsPrinter = new FpsPrinter();
+            _fpsPrinter.Initialize(Content);
         }
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to Draw textures.
@@ -71,20 +62,11 @@ namespace namvik
             // TODO: use this.Content to load your game content here
         }
 
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// game-specific content.
-        /// </summary>
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
         }
 
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -102,6 +84,8 @@ namespace namvik
             _character.Update(dt);
 
             FollowCameraTo(_character, dt);
+
+            _fpsPrinter.Update(dt);
         }
 
         private void FollowCameraTo(Character target, float dt)
@@ -113,16 +97,11 @@ namespace namvik
             _camera.LookAt(nextCameraPosition);
         }
 
-        /// <summary>
-        /// This is called when the game should Draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            var dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            // TODO: Add your drawing code here
 
             _spriteBatch.Begin(transformMatrix: _camera.GetViewMatrix(), samplerState: SamplerState.PointClamp);
 
@@ -130,6 +109,10 @@ namespace namvik
 
             _character.Draw(_spriteBatch);
 
+            _spriteBatch.End();
+
+            _spriteBatch.Begin();
+            _fpsPrinter.Draw(dt, _spriteBatch);
             _spriteBatch.End();
 
             base.Draw(gameTime);
