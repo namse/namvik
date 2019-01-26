@@ -258,6 +258,7 @@ namespace namvik
 
             _polygonDefs = dividedPolygon.Select(points =>
             {
+                points = MakePolygonCw(points);
                 var polygonDef = new PolygonDef
                 {
                     VertexCount = points.Count,
@@ -269,6 +270,17 @@ namespace namvik
             _polygonDefs.ForEach(def => { Body.CreateShape(def); });
 
             Body.SetUserData(this);
+        }
+
+        private List<Vector2> MakePolygonCw(List<Vector2> points)
+        {
+            if (IsPolygonClockWise(points))
+            {
+                return points;
+            }
+
+            points.Reverse();
+            return points;
         }
 
         public bool IsConvexPolygon(List<Vector2> points)
@@ -469,10 +481,18 @@ namespace namvik
         {
             base.Draw(spriteBatch);
 
+            //var index = 0;
             _polygonDefs.ForEach(polygonDef =>
             {
-                var physicsPolygons = polygonDef.Vertices.Take(polygonDef.VertexCount).Select(vec2 => vec2.ToVector2()).ToArray();
-                spriteBatch.DrawPolygon(Body.GetPosition().ToVector2(), physicsPolygons, Color.GreenYellow, 2f);
+                var physicsPolygon = polygonDef.Vertices.Take(polygonDef.VertexCount).Select(vec2 => vec2.ToVector2()).ToArray();
+                spriteBatch.DrawPolygon(Body.GetPosition().ToVector2(), physicsPolygon, Color.GreenYellow, 2f);
+
+                //foreach (var point in physicsPolygon)
+                //{
+                //    spriteBatch.DrawString(Game1.DefaultFont, index.ToString(), Body.GetPosition().ToVector2() + point, Color.Black);
+
+                //    index += 1;
+                //}
             });
 
             spriteBatch.DrawPolygon(new Vector2(X, Y), Polygon.Points.ToArray(), Color.Red);
