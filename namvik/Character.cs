@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml;
 using Box2DX.Collision;
 using Box2DX.Common;
 using Box2DX.Dynamics;
@@ -33,22 +34,44 @@ namespace namvik
 
             _body = Map.World.CreateBody(bodyDef);
 
-
             var polygonDef = new PolygonDef();
 
             var hx = (_texture.Width / 2f).ToMeter();
             var hy = (_texture.Height / 2f).ToMeter();
             polygonDef.SetAsBox(hx, hy, center: new Vec2(hx, hy), angle: 0);
 
-            polygonDef.Density = 0.1f;
-            polygonDef.Friction = 0.0f;
+            polygonDef.Density = 0.001f;
+            polygonDef.Friction = 0.8f;
             polygonDef.Restitution = 0;
 
             _body.CreateShape(polygonDef);
 
+            CreateNonFrictionBorder();
+
             _body.SetMassFromShapes();
 
             Map.World.SetContactListener(this);
+        }
+
+        public void CreateNonFrictionBorder()
+        {
+            var hx = (_texture.Width / 2f).ToMeter();
+            var halfPixel = 0.5f.ToMeter();
+            var hy = (_texture.Height / 2f).ToMeter();
+
+            CreateNonFrictionBody(halfPixel, hy, center: new Vec2(hx * 2 + halfPixel, hy));
+            CreateNonFrictionBody(halfPixel, hy, center: new Vec2(-halfPixel, hy));
+        }
+
+        public void CreateNonFrictionBody(float hx, float hy, Vec2 center)
+        {
+            var polygonDef = new PolygonDef();
+            polygonDef.SetAsBox(hx, hy, center: center, angle: 0);
+            polygonDef.Density = 0.001f;
+            polygonDef.Friction = 0f;
+            polygonDef.Restitution = 0;
+
+            _body.CreateShape(polygonDef);
         }
 
 
