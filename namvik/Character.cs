@@ -24,6 +24,11 @@ namespace namvik
         private readonly float _maximumJumpHeight = 230f.ToMeter();
         private List<PolygonDef> _polygonDefs = new List<PolygonDef>();
         private float _friction = 0.8f;
+        private Shape _mainBodyShape;
+
+        private bool shouldUpdateVeolictyX;
+        private float nextVelocityX;
+
         public void Initialize(ContentManager content)
         {
             _texture = content.Load<Texture2D>("sprite/character");
@@ -45,9 +50,8 @@ namespace namvik
 
             polygonDef.Density = 0.001f;
             polygonDef.Friction = _friction;
-            polygonDef.Restitution = 0;
 
-            _body.CreateShape(polygonDef);
+            _mainBodyShape = _body.CreateShape(polygonDef);
             _polygonDefs.Add(polygonDef);
 
             CreateNonFrictionBorder();
@@ -61,7 +65,7 @@ namespace namvik
         {
             var hx = (_texture.Width / 2f).ToMeter();
             var halfPixel = 0.5f.ToMeter();
-            var hy = (_texture.Height / 2f).ToMeter();
+            var hy = (_texture.Height / 2f).ToMeter() - halfPixel;
 
             CreateNonFrictionBody(halfPixel, hy, center: new Vec2(hx * 2 + halfPixel, hy));
             CreateNonFrictionBody(halfPixel, hy, center: new Vec2(-halfPixel, hy));
@@ -71,9 +75,8 @@ namespace namvik
         {
             var polygonDef = new PolygonDef();
             polygonDef.SetAsBox(hx, hy, center: center, angle: 0);
-            polygonDef.Density = 0.001f;
+            polygonDef.Density = 0f;
             polygonDef.Friction = 0f;
-            polygonDef.Restitution = 0;
 
             _body.CreateShape(polygonDef);
             _polygonDefs.Add(polygonDef);
@@ -84,7 +87,7 @@ namespace namvik
         {
             base.Add(point);
 
-            var isMyCollision = point.Shape1.GetBody() == _body || point.Shape2.GetBody() == _body;
+            var isMyCollision = point.Shape1 == _mainBodyShape || point.Shape2 == _mainBodyShape;
             if (!isMyCollision)
             {
                 return;
@@ -95,18 +98,26 @@ namespace namvik
             var userData = opposite.GetUserData();
             if (userData is TileObject tileObject && tileObject.TileGorup == TileGroup.Collision)
             {
-                Console.WriteLine(point.Normal.ToVector2());
-
                 if (point.Normal.Y < 0)
                 {
-                    Console.WriteLine("hit the ground!");
                     _isOnGround = true;
+                    //var position = _body.GetPosition();
+                    //position -= point.Normal * point.Separation;
+                    //_body.SetXForm(position, _body.GetAngle());
+
+                    shouldUpdateVeolictyX = true;
+                    nextVelocityX = _body.GetLinearVelocity().X;
                 }
             }
         }
 
         public void Update(float dt)
         {
+            if (shouldUpdateVeolictyX)
+            {
+                _body.SetVelocityX(nextVelocityX);
+                shouldUpdateVeolictyX = false;
+            }
             if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
                 if (_isOnGround)
@@ -144,15 +155,21 @@ namespace namvik
             if (Keyboard.GetState().IsKeyUp(Keys.Left) && Keyboard.GetState().IsKeyUp(Keys.Right))
             {
                 var velocity = _body.GetLinearVelocity();
-                velocity.X = 0;
-                _body.SetLinearVelocity(velocity);
+
+                if (velocity.X != 0)
+                {
+                    velocity.X = 0;
+                    _body.SetLinearVelocity(velocity);
+                }   
             }
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
             Position = _body.GetPosition().ToVector2();
-            //Console.WriteLine(Position.Y);
+
+            //Console.WriteLine(_body.GetLinearVelocity().ToVector2());
+
             var maybeWorks = new Vector2((int)Position.X, (int)Position.Y);
             spriteBatch.Draw(_texture, maybeWorks, Color.White);
             //spriteBatch.Draw(_texture, Position, Color.White);

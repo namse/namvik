@@ -31,6 +31,13 @@ namespace namvik
             body.SetLinearVelocity(velocity);
         }
 
+        public static void SetVelocityX(this Body body, float x)
+        {
+            var velocity = body.GetLinearVelocity();
+            velocity.X = x;
+            body.SetLinearVelocity(velocity);
+        }
+
         public static Microsoft.Xna.Framework.Color ToXnaColor(this Box2DX.Dynamics.Color color)
         {
             return new Microsoft.Xna.Framework.Color(color.R, color.G, color.B);
