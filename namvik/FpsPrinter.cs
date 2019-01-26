@@ -6,14 +6,12 @@ namespace namvik
 {
     public class FpsPrinter: GameObject
     {
-        private SpriteFont _font;
-        private int frameCount;
+        private int _frameCount;
         private float _sumOfTime;
         private readonly int _maxFrameCount = 5;
         private int _fps;
         public override void Initialize(ContentManager content)
         {
-            _font = content.Load<SpriteFont>("font/defaultFont");
         }
 
         public override void Update(float dt)
@@ -23,16 +21,16 @@ namespace namvik
 
         public override void Draw(float dt, SpriteBatch spriteBatch)
         {
-            frameCount += 1;
+            _frameCount += 1;
             _sumOfTime += dt;
-            if (frameCount == _maxFrameCount)
+            if (_frameCount == _maxFrameCount)
             {
-                _fps = (int)(frameCount / _sumOfTime);
-                frameCount = 0;
+                _fps = (int)(_frameCount / _sumOfTime);
+                _frameCount = 0;
                 _sumOfTime = 0;
             }
 
-            spriteBatch.DrawString(_font, _fps.ToString(), new Vector2(0, 0), Color.GreenYellow);
+            spriteBatch.DrawString(Game1.DefaultFont, _fps.ToString(), new Vector2(0, 0), Color.GreenYellow);
         }
     }
 }

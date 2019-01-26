@@ -17,6 +17,9 @@ namespace namvik
         private Character _character;
         private FpsPrinter _fpsPrinter;
 
+        public static SpriteFont DefaultFont;
+
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -52,6 +55,8 @@ namespace namvik
 
             _fpsPrinter = new FpsPrinter();
             _fpsPrinter.Initialize(Content);
+
+            DefaultFont = Content.Load<SpriteFont>("font/defaultFont");
         }
 
         protected override void LoadContent()
