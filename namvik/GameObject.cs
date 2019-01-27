@@ -65,6 +65,15 @@ namespace namvik
 
             if (!ContactPoints.ContainsKey(point.ID.Key))
             {
+                if (point.Shape1.GetBody().GetUserData() == this)
+                {
+                    point.Normal *= -1;
+                    point.Velocity *= 1;
+                    var temp = point.Shape1;
+                    point.Shape1 = point.Shape2;
+                    point.Shape1 = temp;
+                }
+
                 ContactPoints.Add(point.ID.Key, point);
             }
         }
