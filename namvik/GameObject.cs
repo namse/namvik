@@ -61,7 +61,6 @@ namespace namvik
 
             if (ContactPoints.ContainsKey(key))
             {
-                Console.WriteLine($"Remove: {key}");
                 ContactPoints.Remove(key);
             }
         }
@@ -79,7 +78,6 @@ namespace namvik
 
             if (!ContactPoints.ContainsKey(key))
             {
-                Console.WriteLine($"Add: {key}");
                 ContactPoints.Add(key, point);
             }
         }
