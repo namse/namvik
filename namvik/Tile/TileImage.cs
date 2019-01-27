@@ -19,7 +19,6 @@ namespace namvik.Tile
         public void Parse(XmlElement xmlElement, ContentManager content)
         {
             Source = xmlElement.GetAttribute("source");
-            Console.WriteLine(Source);
             Texture = LoadTexture(content, Source);
 
             Texture2DMap.Add(_gid, Texture);

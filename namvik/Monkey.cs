@@ -29,7 +29,6 @@ namespace namvik
 
         public override void Update(float dt)
         {
-            Console.WriteLine("monkey is coming");
         }
     }
 }

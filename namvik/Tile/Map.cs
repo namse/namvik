@@ -47,7 +47,6 @@ namespace namvik.Tile
                         break;
                 }
             }
-            Console.WriteLine(_tileSetList);
         }
 
         public void InitializeWorld(SpriteBatch spriteBatch)

@@ -214,11 +214,6 @@ namespace namvik.Tile
 
             var isPolygonClockWise = IsPolygonClockWise(points);
 
-            if (points.Count == 15)
-            {
-                Console.WriteLine("sex");
-            }
-
             for (var i = 0; i < points.Count; i += 1)
             {
                 var indexA = i;
