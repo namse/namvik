@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ServiceModel.Activities.Configuration;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -6,7 +7,6 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
 using namvik.Tile;
-
 
 namespace namvik
 {
@@ -20,6 +20,8 @@ namespace namvik
         private FpsPrinter _fpsPrinter;
 
         public static SpriteFont DefaultFont;
+
+        private List<GameObject> _gameObjects = new List<GameObject>();
 
 
         public Game1()
@@ -52,6 +54,7 @@ namespace namvik
 
             _character = new Character();
             _character.Initialize(Content);
+            _gameObjects.Add(_character);
 
             _camera.LookAt(_character.Position);
 
@@ -81,14 +84,23 @@ namespace namvik
 
             base.Update(gameTime);
 
+            if (Keyboard.GetState().IsKeyDown(Keys.F2))
+            {
+                var monkey = Monkey.SpawnMonkey(Content, _character.Position);
+                _gameObjects.Add(monkey);
+            }
+
             var dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
             var physicsUpdateFrequency = 3;
             for (var i = 0; i < physicsUpdateFrequency; i += 1)
             {
                 _map.Update(dt / (float)physicsUpdateFrequency);
             }
-            
-            _character.Update(dt);
+
+            _gameObjects.ForEach(gameObject =>
+            {
+                gameObject.Update(dt);
+            });
 
             FollowCameraTo(_character, dt);
 
@@ -114,7 +126,10 @@ namespace namvik
 
             _map.Draw(_camera, _spriteBatch);
 
-            _character.Draw(dt, _spriteBatch);
+            _gameObjects.ForEach(gameObject =>
+            {
+                gameObject.Draw(dt, _spriteBatch);
+            });
 
             _spriteBatch.End();
 

@@ -44,6 +44,7 @@
     <Compile Include="Box2DDebugDraw.cs" />
     <Compile Include="FpsPrinter.cs" />
     <Compile Include="GameObject.cs" />
+    <Compile Include="Monkey.cs" />
     <Compile Include="ScaleBetweenPixelAndMeter.cs" />
     <Compile Include="Tile\Tile.cs" />
     <Compile Include="Tile\TileImage.cs" />

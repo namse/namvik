@@ -26,33 +26,7 @@ namespace namvik
         {
             Texture = content.Load<Texture2D>("sprite/character");
             Position = new Vector2(246.2743f, -1806.1f);
-
-            var bodyDef = new BodyDef
-            {
-                Position = Position.ToVec2(),
-                FixedRotation = true,
-            };
-
-            Body = Map.World.CreateBody(bodyDef);
-
-            var polygonDef = new PolygonDef();
-
-            var hx = (Texture.Width / 2f).ToMeter();
-            var hy = (Texture.Height / 2f).ToMeter();
-            polygonDef.SetAsBox(hx, hy, center: new Vec2(hx, hy), angle: 0);
-
-            polygonDef.Density = 0.001f;
-            polygonDef.Friction = 0f;
-            polygonDef.Restitution = 0f;
-
-            MainBodyShape = Body.CreateShape(polygonDef);
-            PolygonDefs.Add(polygonDef);
-
-            Body.SetMassFromShapes();
-
-            Body.SetUserData(this);
-
-            Map.World.SetContactListener(this);
+            MakeBox2DBoxWithTexture();
         }
 
         public override void Update(float dt)
