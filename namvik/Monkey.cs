@@ -38,7 +38,7 @@ namespace namvik
             polygonDef.Density = 1f;
             polygonDef.Friction = 0f;
             polygonDef.Restitution = 0f;
-            //polygonDef.IsSensor = true;
+            polygonDef.IsSensor = true;
             polygonDef.Filter.GroupIndex = ContactGroupIndex.Monster;
 
             Body.CreateShape(polygonDef);

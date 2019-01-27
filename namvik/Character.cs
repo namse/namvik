@@ -13,11 +13,11 @@ using Math = System.Math;
 
 namespace namvik
 {
-    public class Character: GameObject
+    public class Character : GameObject
     {
         private readonly float _maxVelocity = 480f.ToMeter();
         private readonly float _accelerationX = 600f.ToMeter();
-        private readonly float _maximumJumpHeight = 230f.ToMeter();
+        private readonly float _defaultJumpHeight = 230f.ToMeter();
 
         private readonly float _lovelyzK = 0.3f;
         private bool _isStartingJump;
@@ -46,8 +46,23 @@ namespace namvik
                 if (pointInMyPerspective.Shape1.GetBody().GetUserData() is GameObject gameObject)
                 {
                     gameObject.isDead = true;
+                    JumpAfterKillMonster();
                 }
             }
+        }
+        public void JumpAfterKillMonster()
+        {
+            Jump(0.5f * _defaultJumpHeight);
+        }
+
+        public void Jump(float height)
+        {
+            var velocity = Body.GetLinearVelocity();
+
+            var vYForHeight = (float)Math.Sqrt(2f * 9.8f * height);
+
+            velocity.Y = -vYForHeight;
+            Body.SetLinearVelocity(velocity);
         }
 
         public override void Update(float dt)
@@ -61,13 +76,7 @@ namespace namvik
             {
                 if (IsOnGround)
                 {
-                    //IsOnGround = false;
-                    var velocity = Body.GetLinearVelocity();
-
-                    var initialVy = (float)Math.Sqrt(20f * _maximumJumpHeight);
-
-                    velocity.Y = - initialVy;
-                    Body.SetLinearVelocity(velocity);
+                    Jump(_defaultJumpHeight);
 
                     _isStartingJump = true;
                 }
@@ -102,7 +111,7 @@ namespace namvik
                     var acceleration = isLeftMove
                         ? _accelerationX * (-1 + _lovelyzK * Math.Sin(theta))
                         : _accelerationX * (1 + _lovelyzK * Math.Sin(theta));
-                    
+
                     var aX = (float)(acceleration * Math.Cos(theta));
                     var aY = (float)(acceleration * Math.Sin(theta));
 
@@ -129,7 +138,7 @@ namespace namvik
                 {
                     velocity.X = 0;
                     Body.SetLinearVelocity(velocity);
-                }   
+                }
             }
         }
 
