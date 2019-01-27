@@ -45,11 +45,20 @@
     <Compile Include="FpsPrinter.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="ScaleBetweenPixelAndMeter.cs" />
+    <Compile Include="Tile\Tile.cs" />
+    <Compile Include="Tile\TileImage.cs" />
+    <Compile Include="Tile\TileImageObject.cs" />
+    <Compile Include="Tile\TileObject.cs" />
+    <Compile Include="Tile\TileObjectGroup.cs" />
+    <Compile Include="Tile\TilePolygon.cs" />
+    <Compile Include="Tile\TilePolygonObject.cs" />
+    <Compile Include="Tile\TileRectangleObject.cs" />
+    <Compile Include="Tile\TileSet.cs" />
     <Compile Include="Vector2Extension.cs" />
     <Compile Include="Box2DExtension.cs" />
     <Compile Include="Character.cs" />
     <Compile Include="Game1.cs" />
-    <Compile Include="Map.cs" />
+    <Compile Include="Tile\Map.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
+using namvik.Tile;
 
 
 namespace namvik
@@ -113,7 +114,7 @@ namespace namvik
 
             _map.Draw(_camera, _spriteBatch);
 
-            _character.Draw(_spriteBatch);
+            _character.Draw(dt, _spriteBatch);
 
             _spriteBatch.End();
 
