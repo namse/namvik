@@ -95,12 +95,12 @@ namespace namvik
 
             _gameObjects.ForEach(gameObject =>
             {
-                if (gameObject.isDead)
+                if (gameObject.IsDead)
                 {
                     gameObject.Destroy();
                 }
             });
-            _gameObjects.RemoveAll(gameObject => gameObject.isDead);
+            _gameObjects.RemoveAll(gameObject => gameObject.IsDead);
 
             KeyboardManager.Update();
 

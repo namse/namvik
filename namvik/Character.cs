@@ -45,7 +45,7 @@ namespace namvik
             {
                 if (pointInMyPerspective.Shape1.GetBody().GetUserData() is GameObject gameObject)
                 {
-                    gameObject.isDead = true;
+                    gameObject.IsDead = true;
                     JumpAfterKillMonster();
                 }
             }

@@ -43,7 +43,7 @@ namespace namvik
         protected IEnumerable<ContactPoint> ContactPointsInMyPerspective =>
             ContactPoints.Values.Select(contactPoint => contactPoint.InMyPerspective(this));
 
-        public bool isDead;
+        public bool IsDead;
 
         public void Destroy()
         {
