@@ -24,6 +24,7 @@ namespace namvik
 
         public override void Initialize(ContentManager content)
         {
+            base.Initialize(content);
             Texture = content.Load<Texture2D>("sprite/character");
             Position = new Vector2(246.2743f, -1806.1f);
             MakeBox2DBoxWithTexture();
