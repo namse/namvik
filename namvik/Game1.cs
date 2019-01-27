@@ -62,6 +62,13 @@ namespace namvik
             _fpsPrinter.Initialize(Content);
 
             DefaultFont = Content.Load<SpriteFont>("font/defaultFont");
+
+
+            KeyboardManager.OnKeyPress(Keys.F2, (key) =>
+            {
+                var monkey = Monkey.SpawnMonkey(Content, _character.Position);
+                _gameObjects.Add(monkey);
+            });
         }
 
         protected override void LoadContent()
@@ -84,11 +91,7 @@ namespace namvik
 
             base.Update(gameTime);
 
-            if (Keyboard.GetState().IsKeyDown(Keys.F2))
-            {
-                var monkey = Monkey.SpawnMonkey(Content, _character.Position);
-                _gameObjects.Add(monkey);
-            }
+            KeyboardManager.Update();
 
             var dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
             var physicsUpdateFrequency = 3;
