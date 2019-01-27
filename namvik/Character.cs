@@ -1,4 +1,6 @@
-﻿using Box2DX.Collision;
+﻿using System;
+using System.Linq;
+using Box2DX.Collision;
 using Box2DX.Common;
 using Box2DX.Dynamics;
 using Microsoft.Xna.Framework;
@@ -13,9 +15,12 @@ namespace namvik
 {
     public class Character: GameObject
     {
-        private readonly float _maxVelocityX = 480f.ToMeter();
+        private readonly float _maxVelocity = 480f.ToMeter();
         private readonly float _accelerationX = 600f.ToMeter();
         private readonly float _maximumJumpHeight = 230f.ToMeter();
+
+        private readonly float _lovelyzK = 0.3f;
+        private bool _isStartingJump;
 
         public override void Initialize(ContentManager content)
         {
@@ -50,80 +55,76 @@ namespace namvik
             Map.World.SetContactListener(this);
         }
 
-        public override void Remove(ContactPoint point)
-        {
-            base.Remove(point);
-
-            if (ContactPoints.ContainsKey(point.ID.Key))
-            {
-                ContactPoints.Remove(point.ID.Key);
-            }
-        }
-
-        public override void Add(ContactPoint point)
-        {
-            base.Add(point);
-
-            var isMyCollision = point.Shape1 == MainBodyShape || point.Shape2 == MainBodyShape;
-            if (!isMyCollision)
-            {
-                return;
-            }
-
-            if (!ContactPoints.ContainsKey(point.ID.Key))
-            {
-                ContactPoints.Add(point.ID.Key, point);
-            }
-
-            var opposite = point.Shape1.GetBody() == Body ? point.Shape2.GetBody() : point.Shape1.GetBody();
-
-            var userData = opposite.GetUserData();
-            if (userData is TileObject tileObject && tileObject.TileGroup == TileGroup.Collision)
-            {
-                if (point.Normal.Y < 0)
-                {
-                    IsOnGround = true;
-                }
-            }
-        }
-
         public override void Update(float dt)
         {
-            if (ContactPoints.Count == 0)
+            if (!IsOnGround)
             {
                 var vy = Body.GetLinearVelocity().Y;
                 vy += dt * 9.8f;
                 Body.SetVelocityY(vy);
+                _isStartingJump = false;
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
                 if (IsOnGround)
                 {
-                    IsOnGround = false;
+                    //IsOnGround = false;
                     var velocity = Body.GetLinearVelocity();
 
                     var initialVy = (float)Math.Sqrt(20f * _maximumJumpHeight);
 
                     velocity.Y = - initialVy;
                     Body.SetLinearVelocity(velocity);
+
+                    _isStartingJump = true;
                 }
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Left) || Keyboard.GetState().IsKeyDown(Keys.Right))
             {
-                var moveDirection = Keyboard.GetState().IsKeyDown(Keys.Left) ? -1 : 1;
+                var isLeftMove = Keyboard.GetState().IsKeyDown(Keys.Left);
                 var velocity = Body.GetLinearVelocity();
+                var moveDirection = isLeftMove ? -1 : 1;
 
                 if ((moveDirection < 0 && velocity.X > 0) || (moveDirection > 0 && velocity.X < 0))
                 {
                     velocity.X = 0;
                 }
-                
-                velocity.X += dt * moveDirection * _accelerationX;
 
-                if (Math.Abs(velocity.X) > _maxVelocityX)
+                if (!IsOnGround || _isStartingJump)
                 {
-                    velocity.X = moveDirection * _maxVelocityX;
+                    velocity.X += dt * moveDirection * _accelerationX;
+
+                    if (Math.Abs(velocity.X) > _maxVelocity)
+                    {
+                        velocity.X = moveDirection * _maxVelocity;
+                    }
+                }
+                else
+                {
+                    var contactPoint = ContactPoints.First(point => point.Value.Normal.Y < 0).Value;
+                    var normal = contactPoint.Normal;
+                    var gamma = Math.Atan2(-normal.Y, normal.X);
+                    var theta = (Math.PI / 2) - gamma;
+
+                    var acceleration = isLeftMove
+                        ? _accelerationX * (-1 + _lovelyzK * Math.Sin(theta))
+                        : _accelerationX * (1 + _lovelyzK * Math.Sin(theta));
+                    
+                    var aX = (float)(acceleration * Math.Cos(theta));
+                    var aY = (float)(acceleration * Math.Sin(theta));
+
+                    velocity.X += dt * aX;
+                    velocity.Y += dt * aY;
+
+                    if (Math.Abs(velocity.X) > _maxVelocity * Math.Cos(theta))
+                    {
+                        velocity.X = moveDirection * _maxVelocity * (float)Math.Cos(theta);
+                    }
+                    if (Math.Abs(velocity.Y) > _maxVelocity * Math.Sin(theta))
+                    {
+                        velocity.Y = moveDirection * _maxVelocity * (float)Math.Sin(theta);
+                    }
                 }
                 Body.SetLinearVelocity(velocity);
             }

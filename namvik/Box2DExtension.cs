@@ -58,5 +58,20 @@ namespace namvik
         {
             return degree / 180f * (float)Math.PI;
         }
+
+        public static double ToDegree(this double radius)
+        {
+            return radius * 180 / Math.PI;
+        }
+
+        public static double ToRadius(this double degree)
+        {
+            return degree / 180 * Math.PI;
+        }
+
+        public static float ToFloat(this double value)
+        {
+            return (float) value;
+        }
     }
 }
