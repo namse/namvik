@@ -52,15 +52,11 @@ namespace namvik
 
         public override void Update(float dt)
         {
-            //Console.WriteLine(IsOnGround);
+            base.Update(dt);
             if (!IsOnGround)
             {
-                var vy = Body.GetLinearVelocity().Y;
-                vy += dt * 9.8f;
-                Body.SetVelocityY(vy);
                 _isStartingJump = false;
             }
-
             if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
                 if (IsOnGround)

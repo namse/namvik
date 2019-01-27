@@ -47,6 +47,7 @@ namespace namvik
 
         public override void Update(float dt)
         {
+            base.Update(dt);
         }
     }
 }

@@ -116,7 +116,16 @@ namespace namvik
         {
             Map.World.SetContactListener(this);
         }
-        public abstract void Update(float dt);
+
+        public virtual void Update(float dt)
+        {
+            if (!IsOnGround)
+            {
+                var vy = Body.GetLinearVelocity().Y;
+                vy += dt * 9.8f;
+                Body.SetVelocityY(vy);
+            }
+        }
 
         public virtual void Draw(float dt, SpriteBatch spriteBatch)
         {
