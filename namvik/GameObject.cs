@@ -17,7 +17,7 @@ namespace namvik
     public abstract class GameObject : ContactListener
     {
         protected bool HasMass;
-        protected Texture2D Texture;
+        public Texture2D Texture;
         private Vector2 _position;
 
         public Vector2 Position
@@ -36,20 +36,33 @@ namespace namvik
         {
             get
             {
-                return ContactPoints.Count != 0 && ContactPoints.Values.Any(contactPoint => contactPoint.Normal.Y < 0);
+                return ContactPoints.Count != 0 && ContactPointsInMyPerspective.Any(contactPoint =>
+                        contactPoint.Normal.Y < 0);
             }
         }
         protected readonly List<PolygonDef> PolygonDefs = new List<PolygonDef>();
         protected Shape MainBodyShape;
         protected readonly Dictionary<uint, ContactPoint> ContactPoints = new Dictionary<uint, ContactPoint>();
 
+        protected IEnumerable<ContactPoint> ContactPointsInMyPerspective =>
+            ContactPoints.Values.Select(contactPoint => contactPoint.InMyPerspective(this));
+
+        public bool isDead;
+
+        public void Destroy()
+        {
+            Body.GetWorld().DestroyBody(Body);
+        }
+
         public override void Remove(ContactPoint point)
         {
             base.Remove(point);
+            var key = point.ID.Key;
 
-            if (ContactPoints.ContainsKey(point.ID.Key))
+            if (ContactPoints.ContainsKey(key))
             {
-                ContactPoints.Remove(point.ID.Key);
+                Console.WriteLine($"Remove: {key}");
+                ContactPoints.Remove(key);
             }
         }
 
@@ -57,24 +70,17 @@ namespace namvik
         {
             base.Add(point);
 
-            var isMyCollision = point.Shape1 == MainBodyShape || point.Shape2 == MainBodyShape;
-            if (!isMyCollision)
+            if (!point.IsMyCollision(this))
             {
                 return;
             }
 
-            if (!ContactPoints.ContainsKey(point.ID.Key))
-            {
-                if (point.Shape1.GetBody().GetUserData() == this)
-                {
-                    point.Normal *= -1;
-                    point.Velocity *= 1;
-                    var temp = point.Shape1;
-                    point.Shape1 = point.Shape2;
-                    point.Shape1 = temp;
-                }
+            var key = point.ID.Key;
 
-                ContactPoints.Add(point.ID.Key, point);
+            if (!ContactPoints.ContainsKey(key))
+            {
+                Console.WriteLine($"Add: {key}");
+                ContactPoints.Add(key, point);
             }
         }
 

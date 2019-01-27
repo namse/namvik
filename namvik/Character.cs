@@ -30,8 +30,29 @@ namespace namvik
             MakeBox2DBoxWithTexture();
         }
 
+        public override void Add(ContactPoint point)
+        {
+            base.Add(point);
+
+            if (!point.IsMyCollision(this))
+            {
+                return;
+            }
+
+            var pointInMyPerspective = point.InMyPerspective(this);
+
+            if (pointInMyPerspective.Shape1.FilterData.GroupIndex == ContactGroupIndex.Monster)
+            {
+                if (pointInMyPerspective.Shape1.GetBody().GetUserData() is GameObject gameObject)
+                {
+                    gameObject.isDead = true;
+                }
+            }
+        }
+
         public override void Update(float dt)
         {
+            //Console.WriteLine(IsOnGround);
             if (!IsOnGround)
             {
                 var vy = Body.GetLinearVelocity().Y;
@@ -77,7 +98,7 @@ namespace namvik
                 }
                 else
                 {
-                    var contactPoint = ContactPoints.First(point => point.Value.Normal.Y < 0).Value;
+                    var contactPoint = ContactPointsInMyPerspective.First(point => point.Normal.Y < 0);
                     var normal = contactPoint.Normal;
                     var gamma = Math.Atan2(-normal.Y, normal.X);
                     var theta = (Math.PI / 2) - gamma;

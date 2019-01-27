@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.ServiceModel.Activities.Configuration;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -22,7 +23,6 @@ namespace namvik
         public static SpriteFont DefaultFont;
 
         private List<GameObject> _gameObjects = new List<GameObject>();
-
 
         public Game1()
         {
@@ -66,7 +66,9 @@ namespace namvik
 
             KeyboardManager.OnKeyPress(Keys.F2, (key) =>
             {
-                var monkey = Monkey.SpawnMonkey(Content, _character.Position);
+                var characterSize = new Vector2(_character.Texture.Width, _character.Texture.Height);
+                var monkeyPosition = _character.Position + characterSize + new Vector2(100, -100);
+                var monkey = Monkey.SpawnMonkey(Content, monkeyPosition);
                 _gameObjects.Add(monkey);
             });
         }
@@ -90,6 +92,15 @@ namespace namvik
                 Exit();
 
             base.Update(gameTime);
+
+            _gameObjects.ForEach(gameObject =>
+            {
+                if (gameObject.isDead)
+                {
+                    gameObject.Destroy();
+                }
+            });
+            _gameObjects.RemoveAll(gameObject => gameObject.isDead);
 
             KeyboardManager.Update();
 

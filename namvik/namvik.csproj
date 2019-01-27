@@ -42,6 +42,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Box2DDebugDraw.cs" />
+    <Compile Include="ContactGroupIndex.cs" />
     <Compile Include="FpsPrinter.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="KeyboardManager.cs" />
