@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Box2DX.Collision;
 using Box2DX.Common;
@@ -84,6 +84,7 @@ namespace namvik
             if (Keyboard.GetState().IsKeyDown(Keys.Left) || Keyboard.GetState().IsKeyDown(Keys.Right))
             {
                 var isLeftMove = Keyboard.GetState().IsKeyDown(Keys.Left);
+                IsSeeLeft = isLeftMove;
                 var velocity = Body.GetLinearVelocity();
                 var moveDirection = isLeftMove ? -1 : 1;
 
@@ -140,22 +141,6 @@ namespace namvik
                     Body.SetLinearVelocity(velocity);
                 }
             }
-        }
-
-        public override void Draw(float dt, SpriteBatch spriteBatch)
-        {
-            Position = Body.GetPosition().ToVector2();
-
-            //Console.WriteLine(_body.GetLinearVelocity().ToVector2());
-
-            var maybeWorks = new Vector2((int)Position.X, (int)Position.Y);
-            spriteBatch.Draw(Texture, maybeWorks, Color.White);
-            //spriteBatch.Draw(_texture, Position, Color.White);
-
-            PolygonDefs.ForEach(polygonDef =>
-            {
-                polygonDef.Draw(Body.GetPosition(), spriteBatch);
-            });
         }
     }
 }

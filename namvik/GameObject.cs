@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Box2DX.Collision;
@@ -25,6 +26,7 @@ namespace namvik
                 Body?.SetXForm(value.ToVec2(), Body.GetAngle());
             }
         }
+        protected bool IsSeeLeft = true;
 
         protected Body Body;
 
@@ -126,7 +128,17 @@ namespace namvik
             Position = Body.GetPosition().ToVector2();
 
             var integerPosition = new Vector2((int)Position.X, (int)Position.Y);
-            spriteBatch.Draw(Texture, integerPosition, Color.White);
+
+            spriteBatch.Draw(
+                Texture,
+                integerPosition,
+                null,
+                Color.White,
+                0,
+                Vector2.Zero,
+                Vector2.One,
+                IsSeeLeft ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
+                0f);
 
             PolygonDefs.ForEach(polygonDef =>
             {
