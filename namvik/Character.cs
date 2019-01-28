@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Box2DX.Collision;
 using Box2DX.Common;
@@ -102,7 +102,7 @@ namespace namvik
                         velocity.X = moveDirection * _maxVelocity;
                     }
                 }
-                else
+                else if (IsOnGround)
                 {
                     var contactPoint = ContactPointsInMyPerspective.First(point => point.Normal.Y < 0);
                     var normal = contactPoint.Normal;

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Box2DX.Collision;
@@ -35,7 +35,7 @@ namespace namvik
             get
             {
                 return ContactPoints.Count != 0 && ContactPointsInMyPerspective.Any(contactPoint =>
-                        contactPoint.Normal.Y < 0);
+                        contactPoint.Normal.Y < 0 && contactPoint.Shape1.FilterData.GroupIndex != ContactGroupIndex.Monster);
             }
         }
         protected readonly List<PolygonDef> PolygonDefs = new List<PolygonDef>();
@@ -55,6 +55,12 @@ namespace namvik
         public override void Remove(ContactPoint point)
         {
             base.Remove(point);
+
+            if (!point.IsMyCollision(this))
+            {
+                return;
+            }
+
             var key = point.ID.Key;
 
             if (ContactPoints.ContainsKey(key))
