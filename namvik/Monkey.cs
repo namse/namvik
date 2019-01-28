@@ -30,9 +30,9 @@ namespace namvik
 
             var polygonDef = new PolygonDef();
 
-            var hx = (24f).ToMeter();
+            var hx = (Texture.Width / 2f).ToMeter() - 2f.ToMeter();
             var hy = (3.5f).ToMeter();
-            var center = new Vec2(hx + 50f.ToMeter(), 0);
+            var center = new Vec2((Texture.Width / 2f).ToMeter(), 0);
             polygonDef.SetAsBox(hx, hy, center, angle: 0);
 
             polygonDef.Density = 1f;
@@ -43,11 +43,6 @@ namespace namvik
 
             Body.CreateShape(polygonDef);
             PolygonDefs.Add(polygonDef);
-        }
-
-        public override void Update(float dt)
-        {
-            base.Update(dt);
         }
     }
 }
