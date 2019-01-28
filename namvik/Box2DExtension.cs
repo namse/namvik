@@ -97,5 +97,12 @@ namespace namvik
             return contactPoint.Shape1.GetBody().GetUserData() == me ||
                    contactPoint.Shape2.GetBody().GetUserData() == me;
         }
+
+        public static Vec2 Rotate(this Vec2 vec2, float radian)
+        {
+            return new Vec2(
+                (float)Math.Cos(radian) * vec2.X - (float)Math.Sin(radian) * vec2.Y,
+                (float)Math.Sin(radian) * vec2.X + (float)Math.Cos(radian) * vec2.Y);
+        }
     }
 }

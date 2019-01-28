@@ -106,26 +106,22 @@ namespace namvik
                 {
                     var contactPoint = ContactPointsInMyPerspective.First(point => point.Normal.Y < 0);
                     var normal = contactPoint.Normal;
-                    var gamma = Math.Atan2(-normal.Y, normal.X);
-                    var theta = (Math.PI / 2) - gamma;
 
-                    var acceleration = isLeftMove
-                        ? _accelerationX * (-1 + _lovelyzK * Math.Sin(theta))
-                        : _accelerationX * (1 + _lovelyzK * Math.Sin(theta));
+                    var rotateAngle = (isLeftMove ? -1 : 1) * (float)Math.PI / 2f;
+                    var directionVector = normal.Rotate(rotateAngle);
 
-                    var aX = (float)(acceleration * Math.Cos(theta));
-                    var aY = (float)(acceleration * Math.Sin(theta));
+                    var acceleration = _accelerationX * (1 + _lovelyzK * directionVector.Y);
+                    var speedVector = acceleration * directionVector;
 
-                    velocity.X += dt * aX;
-                    velocity.Y += dt * aY;
+                    velocity += dt * speedVector;
 
-                    if (Math.Abs(velocity.X) > _maxVelocity * Math.Cos(theta))
+                    if (Math.Abs(velocity.X) > Math.Abs(_maxVelocity * directionVector.X))
                     {
-                        velocity.X = moveDirection * _maxVelocity * (float)Math.Cos(theta);
+                        velocity.X = _maxVelocity * directionVector.X;
                     }
-                    if (Math.Abs(velocity.Y) > _maxVelocity * Math.Sin(theta))
+                    if (Math.Abs(velocity.Y) > Math.Abs(_maxVelocity * directionVector.Y))
                     {
-                        velocity.Y = moveDirection * _maxVelocity * (float)Math.Sin(theta);
+                        velocity.Y = _maxVelocity * directionVector.Y;
                     }
                 }
                 Body.SetLinearVelocity(velocity);
