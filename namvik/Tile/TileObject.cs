@@ -3,22 +3,24 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace namvik.Tile
 {
+    enum TileObjectType
+    {
+        Unknown,
+        Polygon,
+        Point,
+    }
     class TileObject
     {
         public float X;
         public float Y;
-        public TileGroup TileGroup;
+        public TileGroupName TileGroupName;
 
         public TileObject(float x, float y)
         {
             X = x;
             Y = y;
         }
-        public TileObject(TileObject tileObject)
-        {
-            X = tileObject.X;
-            Y = tileObject.Y;
-        }
+
         public static TileObject Parse(XmlElement xmlElement)
         {
             var x = float.Parse(xmlElement.GetAttribute("x"));
@@ -36,21 +38,31 @@ namespace namvik.Tile
                 return new TileRectangleObject(x, y, width, height, rotation);
             }
             TilePolygon polygon = null;
+            TileObjectType tileObjectType = TileObjectType.Unknown;
             foreach (XmlElement item in xmlElement.ChildNodes)
             {
-                if (item.Name == "polygon")
+                switch (item.Name)
                 {
-                    polygon = new TilePolygon();
-                    polygon.Parse(item);
+                    case "polygon":
+                        polygon = new TilePolygon();
+                        polygon.Parse(item);
+                        tileObjectType = TileObjectType.Polygon;
+                        break;
+                    case "point":
+                        tileObjectType = TileObjectType.Point;
+                        break;
                 }
             }
-            if (polygon != null)
+
+            switch (tileObjectType)
             {
-                return new TilePolygonObject(x, y, polygon);
+                case TileObjectType.Polygon:
+                    return new TilePolygonObject(x, y, polygon);
+                case TileObjectType.Point:
+                    return new TilePointObject(x, y);
+                default:
+                    return new TileObject(x, y);
             }
-
-
-            return new TileObject(x, y);
         }
 
         public virtual void Draw(SpriteBatch spriteBatch)

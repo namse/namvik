@@ -53,6 +53,7 @@
     <Compile Include="Tile\TileImageObject.cs" />
     <Compile Include="Tile\TileObject.cs" />
     <Compile Include="Tile\TileObjectGroup.cs" />
+    <Compile Include="Tile\TilePointObject.cs" />
     <Compile Include="Tile\TilePolygon.cs" />
     <Compile Include="Tile\TilePolygonObject.cs" />
     <Compile Include="Tile\TileRectangleObject.cs" />

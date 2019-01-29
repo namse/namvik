@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using Box2DX.Collision;
 using Box2DX.Common;
 using Box2DX.Dynamics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -74,6 +76,20 @@ namespace namvik.Tile
                     tileObject.Draw(spriteBatch);
                 });
             });
+        }
+
+        public List<Vector2> GetSpawnSpots()
+        {
+            var monsterSpawnTileObjectGroup = _tileObjectGroups.Find(tileObjectGroup =>
+                tileObjectGroup.TileGroupName == TileGroupName.MonsterSpawn);
+
+            if (monsterSpawnTileObjectGroup == null)
+            {
+                throw new Exception("Cannot find Monster Spawn Tile Group");
+            }
+
+            return monsterSpawnTileObjectGroup.TileObjects.Select(tileObject =>
+                new Vector2(tileObject.X, tileObject.Y)).ToList();
         }
     }
 }

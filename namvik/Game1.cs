@@ -71,6 +71,13 @@ namespace namvik
                 var monkey = Monkey.SpawnMonkey(Content, monkeyPosition);
                 _gameObjects.Add(monkey);
             });
+
+            var spawnSpots = _map.GetSpawnSpots();
+            spawnSpots.ForEach(spawnSpot =>
+            {
+                var monkey = Monkey.SpawnMonkey(Content, spawnSpot);
+                _gameObjects.Add(monkey);
+            });
         }
 
         protected override void LoadContent()
