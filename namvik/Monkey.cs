@@ -13,6 +13,10 @@ namespace namvik
 {
     class Monkey: GameObject
     {
+        private float _velocityX;
+        private readonly float _maximumVelocityX = 360f.ToMeter();
+        private readonly float _accelerationX = 1800f.ToMeter();
+
         public static Monkey SpawnMonkey(ContentManager content, Vector2 position)
         {
             var monkey = new Monkey
@@ -43,6 +47,20 @@ namespace namvik
 
             Body.CreateShape(polygonDef);
             PolygonDefs.Add(polygonDef);
+        }
+
+        public override void Update(float dt)
+        {
+            base.Update(dt);
+
+            _velocityX += dt * _accelerationX;
+            if (_velocityX > _maximumVelocityX)
+            {
+                _velocityX = _maximumVelocityX;
+            }
+
+
+            Body.SetVelocityX((IsSeeLeft  ? (-1) : (1)) *_velocityX);
         }
     }
 }
