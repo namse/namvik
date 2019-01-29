@@ -5,9 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Box2DX.Collision;
 using Box2DX.Common;
+using Box2DX.Dynamics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using namvik.Tile;
+using ContactPoint = namvik.Contact.ContactPoint;
 
 namespace namvik
 {
@@ -29,6 +32,8 @@ namespace namvik
         }
         public override void Initialize(ContentManager content)
         {
+            base.Initialize(content);
+
             Texture = content.Load<Texture2D>("sprite/monkey");
             MakeBox2DBoxWithTexture();
 
@@ -47,6 +52,21 @@ namespace namvik
 
             Body.CreateShape(polygonDef);
             PolygonDefs.Add(polygonDef);
+        }
+
+        public override void OnCollisionBefore(ContactPoint point)
+        {
+            base.OnCollisionBefore(point);
+
+            if (
+                point.OppositeShape.GetBody().GetUserData() is TileObject tileObject
+                && tileObject.TileGroupName == TileGroupName.Collision
+                && point.Normal == new Vec2( IsSeeLeft ? -1 : 1, 0)
+            )
+            {
+                IsSeeLeft = !IsSeeLeft;
+                _velocityX = 0;
+            }
         }
 
         public override void Update(float dt)
