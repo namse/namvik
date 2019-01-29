@@ -74,30 +74,6 @@ namespace namvik
             return (float) value;
         }
 
-        public static ContactPoint InMyPerspective(this ContactPoint contactPoint, GameObject me)
-        {
-            if (contactPoint.Shape2.GetBody().GetUserData() == me)
-            {
-                return contactPoint;
-            }
-
-            var reversedContactPoint = new ContactPoint
-            {
-                Shape1 = contactPoint.Shape2,
-                Shape2 = contactPoint.Shape1,
-                Normal = -contactPoint.Normal,
-                Velocity = -contactPoint.Velocity,
-            };
-
-            return reversedContactPoint;
-        }
-
-        public static bool IsMyCollision(this ContactPoint contactPoint, GameObject me)
-        {
-            return contactPoint.Shape1.GetBody().GetUserData() == me ||
-                   contactPoint.Shape2.GetBody().GetUserData() == me;
-        }
-
         public static Vec2 Rotate(this Vec2 vec2, float radian)
         {
             return new Vec2(

@@ -9,10 +9,12 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using namvik.Tile;
 using Color = Microsoft.Xna.Framework.Color;
+using ContactListener = namvik.Contact.ContactListener;
+using ContactManager = namvik.Contact.ContactManager;
 
 namespace namvik
 {
-    public abstract class GameObject : ContactListener
+    public abstract class GameObject: ContactListener
     {
         protected bool HasMass = true;
         public Texture2D Texture;
@@ -34,56 +36,18 @@ namespace namvik
         {
             get
             {
-                return ContactPoints.Count != 0 && ContactPointsInMyPerspective.Any(contactPoint =>
-                        contactPoint.Normal.Y < 0 && contactPoint.Shape1.FilterData.GroupIndex != ContactGroupIndex.Monster);
+                return ContactPoints.Count() != 0 && ContactPoints.Any(contactPoint =>
+                        contactPoint.Normal.Y > 0 && contactPoint.OppositeShape.FilterData.GroupIndex != ContactGroupIndex.Monster);
             }
         }
         protected readonly List<PolygonDef> PolygonDefs = new List<PolygonDef>();
         protected Shape MainBodyShape;
-        protected readonly Dictionary<uint, ContactPoint> ContactPoints = new Dictionary<uint, ContactPoint>();
-
-        protected IEnumerable<ContactPoint> ContactPointsInMyPerspective =>
-            ContactPoints.Values.Select(contactPoint => contactPoint.InMyPerspective(this));
-
+        
         public bool IsDead;
 
         public void Destroy()
         {
             Body.GetWorld().DestroyBody(Body);
-        }
-
-        public override void Remove(ContactPoint point)
-        {
-            base.Remove(point);
-
-            if (!point.IsMyCollision(this))
-            {
-                return;
-            }
-
-            var key = point.ID.Key;
-
-            if (ContactPoints.ContainsKey(key))
-            {
-                ContactPoints.Remove(key);
-            }
-        }
-
-        public override void Add(ContactPoint point)
-        {
-            base.Add(point);
-
-            if (!point.IsMyCollision(this))
-            {
-                return;
-            }
-
-            var key = point.ID.Key;
-
-            if (!ContactPoints.ContainsKey(key))
-            {
-                ContactPoints.Add(key, point);
-            }
         }
 
         protected virtual void MakeBox2DBoxWithTexture()
@@ -116,7 +80,7 @@ namespace namvik
 
         public virtual void Initialize(ContentManager content)
         {
-            Map.World.SetContactListener(this);
+            ContactManager.RegisterContactListener(this);
         }
 
         public virtual void Update(float dt)

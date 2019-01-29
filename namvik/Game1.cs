@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
+using namvik.Contact;
 using namvik.Tile;
 
 namespace namvik
@@ -19,6 +20,7 @@ namespace namvik
         private Camera2D _camera;
         private Character _character;
         private FpsPrinter _fpsPrinter;
+        private ContactManager _contactManager;
 
         public static SpriteFont DefaultFont;
 
@@ -32,8 +34,6 @@ namespace namvik
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
 
             var windowWidth = 1000;
@@ -78,6 +78,9 @@ namespace namvik
                 var monkey = Monkey.SpawnMonkey(Content, spawnSpot);
                 _gameObjects.Add(monkey);
             });
+
+            _contactManager = new ContactManager();
+            Map.World.SetContactListener(_contactManager);
         }
 
         protected override void LoadContent()

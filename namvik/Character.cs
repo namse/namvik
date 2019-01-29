@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using namvik.Tile;
 using Color = Microsoft.Xna.Framework.Color;
+using ContactPoint = namvik.Contact.ContactPoint;
 using Math = System.Math;
 
 namespace namvik
@@ -30,20 +31,13 @@ namespace namvik
             MakeBox2DBoxWithTexture();
         }
 
-        public override void Add(ContactPoint point)
+        public override void OnCollisionBefore(ContactPoint point)
         {
-            base.Add(point);
+            base.OnCollisionBefore(point);
 
-            if (!point.IsMyCollision(this))
+            if (point.OppositeShape.FilterData.GroupIndex == ContactGroupIndex.Monster)
             {
-                return;
-            }
-
-            var pointInMyPerspective = point.InMyPerspective(this);
-
-            if (pointInMyPerspective.Shape1.FilterData.GroupIndex == ContactGroupIndex.Monster)
-            {
-                if (pointInMyPerspective.Shape1.GetBody().GetUserData() is GameObject gameObject)
+                if (point.OppositeShape.GetBody().GetUserData() is GameObject gameObject)
                 {
                     gameObject.IsDead = true;
                     JumpAfterKillMonster();
@@ -104,10 +98,10 @@ namespace namvik
                 }
                 else if (IsOnGround)
                 {
-                    var contactPoint = ContactPointsInMyPerspective.First(point => point.Normal.Y < 0);
+                    var contactPoint = ContactPoints.First(point => point.Normal.Y > 0);
                     var normal = contactPoint.Normal;
 
-                    var rotateAngle = (isLeftMove ? -1 : 1) * (float)Math.PI / 2f;
+                    var rotateAngle = (isLeftMove ? 1 : -1) * (float)Math.PI / 2f;
                     var directionVector = normal.Rotate(rotateAngle);
 
                     var acceleration = _accelerationX * (1 + _lovelyzK * directionVector.Y);
