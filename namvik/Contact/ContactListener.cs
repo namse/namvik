@@ -1,16 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Box2DX.Collision;
 
 namespace namvik.Contact
 {
     public abstract class ContactListener
     {
-        private readonly Dictionary<uint, ContactPoint> _contactPointDictionary = new Dictionary<uint, ContactPoint>();
+        private readonly Dictionary<Tuple<ContactID, Shape>, ContactPoint> _contactPointDictionary = new Dictionary<Tuple<ContactID, Shape>, ContactPoint>();
 
         protected IEnumerable<ContactPoint> ContactPoints => _contactPointDictionary.Values;
 
         private void AddContactPoint(ContactPoint point)
         {
-            var key = point.Id.Key;
+            var key = new Tuple<ContactID, Shape>(point.Id, point.OppositeShape);
 
             if (!_contactPointDictionary.ContainsKey(key))
             {
@@ -20,8 +22,8 @@ namespace namvik.Contact
 
         private void RemoveContactPoint(ContactPoint point)
         {
-            var key = point.Id.Key;
-
+            var key = new Tuple<ContactID, Shape>(point.Id, point.OppositeShape);
+            
             if (_contactPointDictionary.ContainsKey(key))
             {
                 _contactPointDictionary.Remove(key);
