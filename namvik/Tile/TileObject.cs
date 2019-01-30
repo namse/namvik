@@ -14,9 +14,11 @@ namespace namvik.Tile
         public float X;
         public float Y;
         public TileGroupName TileGroupName;
+        public int Id;
 
-        public TileObject(float x, float y)
+        public TileObject(int id,float x, float y)
         {
+            Id = id;
             X = x;
             Y = y;
         }
@@ -25,6 +27,7 @@ namespace namvik.Tile
         {
             var x = float.Parse(xmlElement.GetAttribute("x"));
             var y = float.Parse(xmlElement.GetAttribute("y"));
+            var id = int.Parse(xmlElement.GetAttribute("id"));
             if (xmlElement.HasAttribute("width"))
             {
                 var width = float.Parse(xmlElement.GetAttribute("width"));
@@ -33,9 +36,9 @@ namespace namvik.Tile
                 var rotation = hasRotation ? float.Parse(xmlElement.GetAttribute("rotation")) : 0;
                 if (xmlElement.HasAttribute("gid")) {
                     var gid = int.Parse(xmlElement.GetAttribute("gid"));
-                    return new TileImageObject(x, y, width, height, gid);
+                    return new TileImageObject(id, x, y, width, height, gid);
                 }
-                return new TileRectangleObject(x, y, width, height, rotation);
+                return new TileRectangleObject(id, x, y, width, height, rotation);
             }
             TilePolygon polygon = null;
             TileObjectType tileObjectType = TileObjectType.Unknown;
@@ -57,11 +60,11 @@ namespace namvik.Tile
             switch (tileObjectType)
             {
                 case TileObjectType.Polygon:
-                    return new TilePolygonObject(x, y, polygon);
+                    return new TilePolygonObject(id, x, y, polygon);
                 case TileObjectType.Point:
-                    return new TilePointObject(x, y);
+                    return new TilePointObject(id, x, y);
                 default:
-                    return new TileObject(x, y);
+                    return new TileObject(id, x, y);
             }
         }
 

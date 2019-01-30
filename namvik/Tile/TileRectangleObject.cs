@@ -20,7 +20,7 @@ namespace namvik.Tile
         private readonly PolygonDef _polygonDef;
         private readonly List<Vector2> _points;
 
-        public TileRectangleObject(float x, float y, float width, float height, float angleDegree) : base(x, y)
+        public TileRectangleObject(int id, float x, float y, float width, float height, float angleDegree) : base(id, x, y)
         {
             Width = width;
             Height = height;

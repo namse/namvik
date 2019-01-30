@@ -8,7 +8,7 @@ namespace namvik.Tile
 {
     class TilePointObject: TileObject
     {
-        public TilePointObject(float x, float y) : base(x, y)
+        public TilePointObject(int id, float x, float y) : base(id, x, y)
         {
         }
     }

@@ -17,7 +17,7 @@ namespace namvik.Tile
         public TilePolygon Polygon;
         public Body Body;
         private readonly List<PolygonDef> _polygonDefs;
-        public TilePolygonObject(float x, float y, TilePolygon polygon): base(x, y) {
+        public TilePolygonObject(int id, float x, float y, TilePolygon polygon): base(id, x, y) {
             X = x;
             Y = y;
             Polygon = polygon;

@@ -9,7 +9,7 @@ namespace namvik.Tile
         public float Width;
         public float Height;
 
-        public TileImageObject(float x, float y, float width, float height, int gid) : base(x, y)
+        public TileImageObject(int id, float x, float y, float width, float height, int gid) : base(id, x, y)
         {
             Gid = gid;
             Width = width;
