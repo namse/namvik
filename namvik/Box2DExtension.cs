@@ -45,8 +45,13 @@ namespace namvik
 
         public static void Draw(this PolygonDef polygonDef, Vec2 offset, SpriteBatch spriteBatch)
         {
+            Draw(polygonDef, offset, spriteBatch, Color.GreenYellow);
+        }
+
+        public static void Draw(this PolygonDef polygonDef, Vec2 offset, SpriteBatch spriteBatch, Color color)
+        {
             var physicsPolygon = polygonDef.Vertices.Take(polygonDef.VertexCount).Select(vec2 => vec2.ToVector2()).ToArray();
-            spriteBatch.DrawPolygon(offset.ToVector2(), physicsPolygon, Color.GreenYellow, 2f);
+            spriteBatch.DrawPolygon(offset.ToVector2(), physicsPolygon, color, 2f);
         }
 
         public static float ToDegree(this float radius)

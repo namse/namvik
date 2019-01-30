@@ -112,7 +112,7 @@ namespace namvik
 
             PolygonDefs.ForEach(polygonDef =>
             {
-                polygonDef.Draw(Body.GetPosition(), spriteBatch);
+                polygonDef.Draw(Body.GetPosition(), spriteBatch, IsOnGround ? Color.GreenYellow : Color.Red);
             });
         }
     }
