@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Linq;
-using Box2DX.Collision;
-using Box2DX.Common;
-using Box2DX.Dynamics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using namvik.Tile;
-using Color = Microsoft.Xna.Framework.Color;
 using ContactPoint = namvik.Contact.ContactPoint;
 using Math = System.Math;
 
@@ -22,6 +17,8 @@ namespace namvik
 
         private readonly float _lovelyzK = 0.3f;
         private bool _isStartingJump;
+        private float _timeSinceNotGround;
+        public bool CanIJump => !_isStartingJump && (IsOnGround || _timeSinceNotGround < 0.10f);
 
         public override void Initialize(ContentManager content)
         {
@@ -45,6 +42,7 @@ namespace namvik
                 }
             }
         }
+
         public void JumpAfterKillMonster()
         {
             Jump(0.5f * _defaultJumpHeight);
@@ -65,11 +63,22 @@ namespace namvik
             base.Update(dt);
             if (!IsOnGround)
             {
-                _isStartingJump = false;
+                if (CanIJump)
+                {
+                    _isStartingJump = false;
+                }
+                _timeSinceNotGround += dt;
             }
+
+            if (IsOnGround)
+            {
+                _isStartingJump = false;
+                _timeSinceNotGround = 0;
+            }
+
             if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
-                if (IsOnGround)
+                if (CanIJump)
                 {
                     Jump(_defaultJumpHeight);
 
