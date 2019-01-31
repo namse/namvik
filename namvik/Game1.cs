@@ -25,8 +25,6 @@ namespace namvik
 
         public static SpriteFont DefaultFont;
 
-        private List<GameObject> _gameObjects = new List<GameObject>();
-
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -54,7 +52,6 @@ namespace namvik
             _map.Initialize(Content, _spriteBatch);
 
             _character = new Character();
-            _gameObjects.Add(_character);
 
             _camera.LookAt(_character.Position);
 
@@ -68,7 +65,6 @@ namespace namvik
                 var characterSize = new Vector2(_character.Texture.Width, _character.Texture.Height);
                 var monkeyPosition = _character.Position + characterSize + new Vector2(100, -100);
                 var monkey = Monkey.SpawnMonkey(Content, monkeyPosition);
-                _gameObjects.Add(monkey);
             });
 
             KeyboardManager.OnKeyPress(Keys.F4, (key) =>
@@ -81,7 +77,6 @@ namespace namvik
             spawnSpots.ForEach(spawnSpot =>
             {
                 var monkey = Monkey.SpawnMonkey(Content, spawnSpot);
-                _gameObjects.Add(monkey);
             });
 
             _contactManager = new ContactManager();
@@ -112,14 +107,14 @@ namespace namvik
 
             base.Update(gameTime);
 
-            _gameObjects.ForEach(gameObject =>
+            GameObject.GameObjects.ForEach(gameObject =>
             {
                 if (gameObject.IsDead)
                 {
                     gameObject.Destroy();
                 }
             });
-            _gameObjects.RemoveAll(gameObject => gameObject.IsDead);
+            GameObject.GameObjects.RemoveAll(gameObject => gameObject.IsDead);
 
             KeyboardManager.Update();
 
@@ -130,7 +125,7 @@ namespace namvik
                 _map.Update(dt / (float)physicsUpdateFrequency);
             }
 
-            _gameObjects.ForEach(gameObject =>
+            GameObject.GameObjects.ForEach(gameObject =>
             {
                 gameObject.Update(dt);
             });
@@ -159,7 +154,7 @@ namespace namvik
 
             _map.Draw(_camera, _spriteBatch);
 
-            _gameObjects.ForEach(gameObject =>
+            GameObject.GameObjects.ForEach(gameObject =>
             {
                 gameObject.Draw(dt, _spriteBatch);
             });

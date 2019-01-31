@@ -19,6 +19,7 @@ namespace namvik
         private float _velocityX;
         private readonly float _maximumVelocityX = 360f.ToMeter();
         private readonly float _accelerationX = 1800f.ToMeter();
+        private Shape _hitSensorShape;
 
         public Monkey(): base(null)
         {
@@ -37,7 +38,7 @@ namespace namvik
             polygonDef.IsSensor = true;
             polygonDef.Filter.GroupIndex = ContactGroupIndex.Monster;
 
-            Body.CreateShape(polygonDef);
+            _hitSensorShape = Body.CreateShape(polygonDef);
             PolygonDefs.Add(polygonDef);
         }
 
@@ -63,6 +64,14 @@ namespace namvik
             {
                 IsSeeingLeft = !IsSeeingLeft;
                 _velocityX = 0;
+            }
+
+            if (
+                point.MyShape != _hitSensorShape
+                && point.OppositeShape.GetBody().GetUserData() is Character character
+            )
+            {
+                character.OnHit();
             }
         }
 

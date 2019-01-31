@@ -69,6 +69,12 @@ namespace namvik
             _items.Add(item);
         }
 
+        public void OnHit()
+        {
+            _items.ForEach(item => item.IsDead = true);
+            _items.Clear();
+        }
+
         public override void Update(float dt)
         {
             base.Update(dt);
@@ -152,13 +158,6 @@ namespace namvik
                     Body.SetLinearVelocity(velocity);
                 }
             }
-        }
-
-        public override void Draw(float dt, SpriteBatch spriteBatch)
-        {
-            base.Draw(dt, spriteBatch);
-
-            _items.ForEach(item => item.Draw(dt, spriteBatch));
         }
     }
 }

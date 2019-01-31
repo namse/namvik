@@ -20,6 +20,7 @@ namespace namvik
     {
         public readonly GameObject Parent;
         public readonly List<GameObject> Children = new List<GameObject>();
+        public static List<GameObject> GameObjects = new List<GameObject>();
 
         protected bool HasMass = true;
         public readonly Texture2D Texture;
@@ -63,6 +64,8 @@ namespace namvik
 
         protected GameObject(GameObject parent)
         {
+            GameObjects.Add(this);
+
             Parent = parent;
             parent?.Children.Add(this);
 
@@ -74,7 +77,11 @@ namespace namvik
 
         public void Destroy()
         {
-            Body.GetWorld().DestroyBody(Body);
+            Body?.GetWorld().DestroyBody(Body);
+
+            Parent?.Children.Remove(this);
+
+            Children.ForEach(child => child.Destroy());
         }
 
         protected virtual void MakeBox2DBoxWithTexture()
@@ -107,7 +114,7 @@ namespace namvik
 
         public virtual void Update(float dt)
         {
-            if (HasMass && !IsOnGround)
+            if (Body != null && HasMass && !IsOnGround)
             {
                 var vy = Body.GetLinearVelocity().Y;
                 vy += dt * 9.8f;
