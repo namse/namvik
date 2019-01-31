@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
 using namvik.Contact;
+using namvik.Item;
 using namvik.Tile;
 
 namespace namvik
@@ -53,13 +54,11 @@ namespace namvik
             _map.Initialize(Content, _spriteBatch);
 
             _character = new Character();
-            _character.Initialize(Content);
             _gameObjects.Add(_character);
 
             _camera.LookAt(_character.Position);
 
             _fpsPrinter = new FpsPrinter();
-            _fpsPrinter.Initialize(Content);
 
             DefaultFont = Content.Load<SpriteFont>("font/defaultFont");
 
@@ -70,6 +69,12 @@ namespace namvik
                 var monkeyPosition = _character.Position + characterSize + new Vector2(100, -100);
                 var monkey = Monkey.SpawnMonkey(Content, monkeyPosition);
                 _gameObjects.Add(monkey);
+            });
+
+            KeyboardManager.OnKeyPress(Keys.F4, (key) =>
+            {
+                var armor = new Armor(_character);
+                _character.AddItem(armor);
             });
 
             var spawnSpots = _map.GetSpawnSpots();
@@ -89,6 +94,10 @@ namespace namvik
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+
+            TextureLoader.LoadTexture(typeof(Character), Content, "sprite/character");
+            TextureLoader.LoadTexture(typeof(Monkey), Content, "sprite/monkey");
+            TextureLoader.LoadTexture(typeof(Armor), Content, "sprite/armor");
         }
 
         protected override void UnloadContent()

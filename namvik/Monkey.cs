@@ -20,21 +20,8 @@ namespace namvik
         private readonly float _maximumVelocityX = 360f.ToMeter();
         private readonly float _accelerationX = 1800f.ToMeter();
 
-        public static Monkey SpawnMonkey(ContentManager content, Vector2 position)
+        public Monkey(): base(null)
         {
-            var monkey = new Monkey
-            {
-                Position = position,
-            };
-            monkey.Initialize(content);
-
-            return monkey;
-        }
-        public override void Initialize(ContentManager content)
-        {
-            base.Initialize(content);
-
-            Texture = content.Load<Texture2D>("sprite/monkey");
             MakeBox2DBoxWithTexture();
 
             var polygonDef = new PolygonDef();
@@ -54,6 +41,16 @@ namespace namvik
             PolygonDefs.Add(polygonDef);
         }
 
+        public static Monkey SpawnMonkey(ContentManager content, Vector2 position)
+        {
+            var monkey = new Monkey
+            {
+                Position = position,
+            };
+
+            return monkey;
+        }
+
         public override void OnCollisionBefore(ContactPoint point)
         {
             base.OnCollisionBefore(point);
@@ -61,10 +58,10 @@ namespace namvik
             if (
                 point.OppositeShape.GetBody().GetUserData() is TileObject tileObject
                 && tileObject.TileGroupName == TileGroupName.Collision
-                && point.Normal == new Vec2( IsSeeLeft ? -1 : 1, 0)
+                && point.Normal == new Vec2( IsSeeingLeft ? -1 : 1, 0)
             )
             {
-                IsSeeLeft = !IsSeeLeft;
+                IsSeeingLeft = !IsSeeingLeft;
                 _velocityX = 0;
             }
         }
@@ -80,7 +77,7 @@ namespace namvik
             }
 
 
-            Body.SetVelocityX((IsSeeLeft  ? (-1) : (1)) *_velocityX);
+            Body.SetVelocityX((IsSeeingLeft  ? (-1) : (1)) *_velocityX);
         }
     }
 }

@@ -47,9 +47,12 @@
     <Compile Include="Contact\ContactManager.cs" />
     <Compile Include="FpsPrinter.cs" />
     <Compile Include="GameObject.cs" />
+    <Compile Include="Item\Armor.cs" />
+    <Compile Include="Item\BaseItem.cs" />
     <Compile Include="KeyboardManager.cs" />
     <Compile Include="Monkey.cs" />
     <Compile Include="ScaleBetweenPixelAndMeter.cs" />
+    <Compile Include="TextureLoader.cs" />
     <Compile Include="Tile\Tile.cs" />
     <Compile Include="Tile\TileImage.cs" />
     <Compile Include="Tile\TileImageObject.cs" />

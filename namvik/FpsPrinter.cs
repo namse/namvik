@@ -13,9 +13,6 @@ namespace namvik
         private float _sumUpdateTime;
         private int _drawsPerSecond;
         private int _updatesPerSecond;
-        public override void Initialize(ContentManager content)
-        {
-        }
 
         public override void Update(float dt)
         {
@@ -41,6 +38,10 @@ namespace namvik
             }
 
             spriteBatch.DrawString(Game1.DefaultFont, $"{_drawsPerSecond} | {_updatesPerSecond}", new Vector2(0, 0), Color.GreenYellow);
+        }
+
+        public FpsPrinter() : base(null)
+        {
         }
     }
 }

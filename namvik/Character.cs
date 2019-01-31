@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using namvik.Item;
 using ContactPoint = namvik.Contact.ContactPoint;
 using Math = System.Math;
 
@@ -20,11 +23,14 @@ namespace namvik
         private float _timeSinceNotGround;
         public bool CanIJump => !_isStartingJump && (IsOnGround || _timeSinceNotGround < 0.10f);
 
-        public override void Initialize(ContentManager content)
+        private readonly List<BaseItem> _items = new List<BaseItem>();
+
+        public Character() : this(null)
         {
-            base.Initialize(content);
-            Texture = content.Load<Texture2D>("sprite/character");
-            
+        }
+
+        public Character(GameObject parent): base(parent)
+        {
             Position = new Vector2(246.2743f, -1806.1f);
             MakeBox2DBoxWithTexture();
         }
@@ -58,6 +64,11 @@ namespace namvik
             Body.SetLinearVelocity(velocity);
         }
 
+        public void AddItem(BaseItem item)
+        {
+            _items.Add(item);
+        }
+
         public override void Update(float dt)
         {
             base.Update(dt);
@@ -88,7 +99,7 @@ namespace namvik
             if (Keyboard.GetState().IsKeyDown(Keys.Left) || Keyboard.GetState().IsKeyDown(Keys.Right))
             {
                 var isLeftMove = Keyboard.GetState().IsKeyDown(Keys.Left);
-                IsSeeLeft = isLeftMove;
+                IsSeeingLeft = isLeftMove;
                 var velocity = Body.GetLinearVelocity();
                 var moveDirection = isLeftMove ? -1 : 1;
 
@@ -141,6 +152,13 @@ namespace namvik
                     Body.SetLinearVelocity(velocity);
                 }
             }
+        }
+
+        public override void Draw(float dt, SpriteBatch spriteBatch)
+        {
+            base.Draw(dt, spriteBatch);
+
+            _items.ForEach(item => item.Draw(dt, spriteBatch));
         }
     }
 }
