@@ -6,13 +6,13 @@ namespace namvik.Contact
 {
     public abstract class ContactListener
     {
-        private readonly Dictionary<Tuple<ContactID, Shape>, ContactPoint> _contactPointDictionary = new Dictionary<Tuple<ContactID, Shape>, ContactPoint>();
+        private readonly Dictionary<(ContactID, Shape), ContactPoint> _contactPointDictionary = new Dictionary<(ContactID, Shape), ContactPoint>();
 
         protected IEnumerable<ContactPoint> ContactPoints => _contactPointDictionary.Values;
 
         private void AddContactPoint(ContactPoint point)
         {
-            var key = new Tuple<ContactID, Shape>(point.Id, point.OppositeShape);
+            var key = (point.Id, point.OppositeShape);
 
             if (!_contactPointDictionary.ContainsKey(key))
             {
@@ -22,7 +22,7 @@ namespace namvik.Contact
 
         private void RemoveContactPoint(ContactPoint point)
         {
-            var key = new Tuple<ContactID, Shape>(point.Id, point.OppositeShape);
+            var key = (point.Id, point.OppositeShape);
             
             if (_contactPointDictionary.ContainsKey(key))
             {
