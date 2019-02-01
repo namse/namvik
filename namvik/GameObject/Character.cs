@@ -6,13 +6,13 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using namvik.Item;
+using namvik.GameObject.Item;
 using ContactPoint = namvik.Contact.ContactPoint;
 using Math = System.Math;
 
-namespace namvik
+namespace namvik.GameObject
 {
-    public class Character : GameObject
+    public class Character : BaseGameObject
     {
         private readonly float _maxVelocity = 480f.ToMeter();
         private readonly float _accelerationX = 600f.ToMeter();
@@ -29,7 +29,7 @@ namespace namvik
         {
         }
 
-        public Character(GameObject parent): base(parent)
+        public Character(BaseGameObject parent): base(parent)
         {
             Position = new Vector2(246.2743f, -1806.1f);
             MakeBox2DBoxWithTexture();
@@ -41,7 +41,7 @@ namespace namvik
 
             if (point.OppositeShape.FilterData.GroupIndex == ContactGroupIndex.Monster)
             {
-                if (point.OppositeShape.GetBody().GetUserData() is GameObject gameObject)
+                if (point.OppositeShape.GetBody().GetUserData() is BaseGameObject gameObject)
                 {
                     gameObject.IsDead = true;
                     JumpAfterKillMonster();

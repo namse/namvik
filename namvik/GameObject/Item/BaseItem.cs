@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace namvik.Item
+namespace namvik.GameObject.Item
 {
-    public abstract class BaseItem: GameObject
+    public abstract class BaseItem: BaseGameObject
     {
-        protected BaseItem(GameObject parent): base(parent)
+        protected BaseItem(BaseGameObject parent): base(parent)
         {
 
         }

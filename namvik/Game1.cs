@@ -8,7 +8,8 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
 using namvik.Contact;
-using namvik.Item;
+using namvik.GameObject;
+using namvik.GameObject.Item;
 using namvik.Tile;
 
 namespace namvik
@@ -107,14 +108,14 @@ namespace namvik
 
             base.Update(gameTime);
 
-            GameObject.GameObjects.ForEach(gameObject =>
+            BaseGameObject.GameObjects.ForEach(gameObject =>
             {
                 if (gameObject.IsDead)
                 {
                     gameObject.Destroy();
                 }
             });
-            GameObject.GameObjects.RemoveAll(gameObject => gameObject.IsDead);
+            BaseGameObject.GameObjects.RemoveAll(gameObject => gameObject.IsDead);
 
             KeyboardManager.Update();
 
@@ -125,7 +126,7 @@ namespace namvik
                 _map.Update(dt / (float)physicsUpdateFrequency);
             }
 
-            GameObject.GameObjects.ForEach(gameObject =>
+            BaseGameObject.GameObjects.ForEach(gameObject =>
             {
                 gameObject.Update(dt);
             });
@@ -154,7 +155,7 @@ namespace namvik
 
             _map.Draw(_camera, _spriteBatch);
 
-            GameObject.GameObjects.ForEach(gameObject =>
+            BaseGameObject.GameObjects.ForEach(gameObject =>
             {
                 gameObject.Draw(dt, _spriteBatch);
             });

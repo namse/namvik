@@ -14,13 +14,13 @@ using Color = Microsoft.Xna.Framework.Color;
 using ContactListener = namvik.Contact.ContactListener;
 using ContactManager = namvik.Contact.ContactManager;
 
-namespace namvik
+namespace namvik.GameObject
 {
-    public abstract class GameObject: ContactListener
+    public abstract class BaseGameObject: ContactListener
     {
-        public readonly GameObject Parent;
-        public readonly List<GameObject> Children = new List<GameObject>();
-        public static List<GameObject> GameObjects = new List<GameObject>();
+        public readonly BaseGameObject Parent;
+        public readonly List<BaseGameObject> Children = new List<BaseGameObject>();
+        public static List<BaseGameObject> GameObjects = new List<BaseGameObject>();
 
         protected bool HasMass = true;
         public readonly Texture2D Texture;
@@ -62,7 +62,7 @@ namespace namvik
         
         public bool IsDead;
 
-        protected GameObject(GameObject parent)
+        protected BaseGameObject(BaseGameObject parent)
         {
             GameObjects.Add(this);
 

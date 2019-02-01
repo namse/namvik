@@ -2,9 +2,9 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace namvik
+namespace namvik.GameObject
 {
-    public class FpsPrinter: GameObject
+    public class FpsPrinter: BaseGameObject
     {
         private int _drawCount;
         private float _sumDrawTime;

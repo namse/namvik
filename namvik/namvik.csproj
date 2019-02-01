@@ -45,12 +45,12 @@
     <Compile Include="ContactGroupIndex.cs" />
     <Compile Include="Contact\ContactListener.cs" />
     <Compile Include="Contact\ContactManager.cs" />
-    <Compile Include="FpsPrinter.cs" />
-    <Compile Include="GameObject.cs" />
-    <Compile Include="Item\Armor.cs" />
-    <Compile Include="Item\BaseItem.cs" />
+    <Compile Include="GameObject\FpsPrinter.cs" />
+    <Compile Include="GameObject\BaseGameObject.cs" />
+    <Compile Include="GameObject\Item\Armor.cs" />
+    <Compile Include="GameObject\Item\BaseItem.cs" />
     <Compile Include="KeyboardManager.cs" />
-    <Compile Include="Monkey.cs" />
+    <Compile Include="GameObject\Monkey.cs" />
     <Compile Include="ScaleBetweenPixelAndMeter.cs" />
     <Compile Include="TextureLoader.cs" />
     <Compile Include="Tile\Tile.cs" />
@@ -65,7 +65,7 @@
     <Compile Include="Tile\TileSet.cs" />
     <Compile Include="Vector2Extension.cs" />
     <Compile Include="Box2DExtension.cs" />
-    <Compile Include="Character.cs" />
+    <Compile Include="GameObject\Character.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Tile\Map.cs" />
     <Compile Include="Program.cs" />

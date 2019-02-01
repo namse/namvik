@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace namvik.Item
+namespace namvik.GameObject.Item
 {
     public class Armor : BaseItem
     {
-        public Armor(GameObject parent) : base(parent)
+        public Armor(BaseGameObject parent) : base(parent)
         {
         }
     }

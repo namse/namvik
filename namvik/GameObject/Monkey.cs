@@ -12,9 +12,9 @@ using Microsoft.Xna.Framework.Graphics;
 using namvik.Tile;
 using ContactPoint = namvik.Contact.ContactPoint;
 
-namespace namvik
+namespace namvik.GameObject
 {
-    class Monkey: GameObject
+    class Monkey: BaseGameObject
     {
         private float _velocityX;
         private readonly float _maximumVelocityX = 360f.ToMeter();
