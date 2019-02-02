@@ -37,8 +37,10 @@ namespace namvik.Tile
                 var polygonDef = new PolygonDef
                 {
                     VertexCount = points.Count,
-                    Vertices = points.Select(point => Vector2Extension.ToVec2(point)).ToArray()
+                    Vertices = points.Select(point => point.ToVec2()).ToArray()
                 };
+                polygonDef.Filter.CategoryBits = (ushort)CategoryBits.Ground;
+                polygonDef.Filter.MaskBits = (ushort)MaskBits.Ground;
                 return polygonDef;
             }).ToList();
 

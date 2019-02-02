@@ -68,10 +68,15 @@ namespace namvik
                 var monkey = Monkey.SpawnMonkey(Content, monkeyPosition);
             });
 
-            KeyboardManager.OnKeyPress(Keys.F4, (key) =>
+            KeyboardManager.OnKeyPress(Keys.F3, (key) =>
             {
                 var armor = new Armor(_character);
                 _character.AddItem(armor);
+            });
+
+            KeyboardManager.OnKeyPress(Keys.F4, (key) =>
+            {
+                _character.OnHit();
             });
 
             var spawnSpots = _map.GetSpawnSpots();

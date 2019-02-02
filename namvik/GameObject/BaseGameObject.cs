@@ -62,6 +62,8 @@ namespace namvik.GameObject
         
         public bool IsDead;
         protected Color _color = Color.White;
+        protected CategoryBits categoryBits;
+        protected MaskBits maskBits = MaskBits.Unknown;
 
         protected BaseGameObject(BaseGameObject parent)
         {
@@ -76,11 +78,16 @@ namespace namvik.GameObject
             Texture = TextureLoader.GetTexture(GetType());
         }
 
+        protected void DetachChild(BaseGameObject child)
+        {
+            Children.Remove(child);
+        }
+
         public void Destroy()
         {
             Body?.GetWorld().DestroyBody(Body);
 
-            Parent?.Children.Remove(this);
+            Parent?.DetachChild(this);
 
             Children.ForEach(child => child.Destroy());
         }
@@ -104,6 +111,8 @@ namespace namvik.GameObject
             polygonDef.Density = 0.001f;
             polygonDef.Friction = 0f;
             polygonDef.Restitution = 0f;
+            polygonDef.Filter.CategoryBits = (ushort)categoryBits;
+            polygonDef.Filter.MaskBits = (ushort)maskBits;
 
             MainBodyShape = Body.CreateShape(polygonDef);
             PolygonDefs.Add(polygonDef);
@@ -121,47 +130,19 @@ namespace namvik.GameObject
                 vy += dt * 9.8f;
                 Body.SetVelocityY(vy);
             }
+
+            if (HasMass && Body != null)
+            {
+                Position = Body.GetPosition().ToVector2();
+            }
+            else
+            {
+                Position = Parent.Position;
+            }
         }
 
         public virtual void Draw(float dt, SpriteBatch spriteBatch)
         {
-            if (Body != null)
-            {
-                DrawByBody(dt, spriteBatch);
-            }
-            else
-            {
-                DrawByParentPosition(dt, spriteBatch);
-            }
-        }
-
-        private void DrawByParentPosition(float dt, SpriteBatch spriteBatch)
-        {
-            var position = Parent.Position;
-
-            var integerPosition = new Vector2((int)position.X, (int)position.Y);
-
-            spriteBatch.Draw(
-                Texture,
-                integerPosition,
-                null,
-                _color,
-                0,
-                Vector2.Zero,
-                Vector2.One,
-                IsSeeingLeft ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
-                0f);
-        }
-
-        private void DrawByBody(float dt, SpriteBatch spriteBatch)
-        {
-            if (Body is null)
-            {
-                throw new Exception("DrawByBody must be called when GameObject has Body");
-            }
-
-            Position = Body.GetPosition().ToVector2();
-
             var integerPosition = new Vector2((int)Position.X, (int)Position.Y);
 
             spriteBatch.Draw(
@@ -175,6 +156,11 @@ namespace namvik.GameObject
                 IsSeeingLeft ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
                 0f);
 
+            DrawPolygons(dt, spriteBatch);
+        }
+
+        private void DrawPolygons(float dt, SpriteBatch spriteBatch)
+        {
             PolygonDefs.ForEach(polygonDef =>
             {
                 polygonDef.Draw(Body.GetPosition(), spriteBatch, IsOnGround ? Color.GreenYellow : Color.Red);

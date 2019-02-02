@@ -31,6 +31,8 @@ namespace namvik.GameObject
 
         public Character(BaseGameObject parent): base(parent)
         {
+            categoryBits = CategoryBits.Character;
+            maskBits = MaskBits.Character;
             Position = new Vector2(246.2743f, -1806.1f);
             MakeBox2DBoxWithTexture();
         }
@@ -72,8 +74,15 @@ namespace namvik.GameObject
 
         public void OnHit()
         {
-            _items.ForEach(item => item.IsDead = true);
-            _items.Clear();
+            if (_items.Count <= 0)
+            {
+                return;
+            }
+
+            var item = _items.First();
+            item.OnDestroyed();
+            DetachChild(item);
+            _items.Remove(item);
         }
 
         public override void Update(float dt)

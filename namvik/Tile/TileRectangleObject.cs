@@ -53,6 +53,8 @@ namespace namvik.Tile
             var rotatedHy = (float)(Math.Sin(angleRadian) * hx + Math.Cos(angleRadian) * hy);
 
             _polygonDef.SetAsBox(hx, hy, new Vec2(rotatedHx, rotatedHy), angleRadian);
+            _polygonDef.Filter.CategoryBits = (ushort)CategoryBits.Ground;
+            _polygonDef.Filter.MaskBits = (ushort)MaskBits.Ground;
 
             Body.CreateShape(_polygonDef);
 

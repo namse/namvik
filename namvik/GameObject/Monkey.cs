@@ -23,6 +23,9 @@ namespace namvik.GameObject
 
         public Monkey(): base(null)
         {
+            categoryBits = CategoryBits.Monster;
+            maskBits = MaskBits.Monster;
+
             MakeBox2DBoxWithTexture();
 
             var polygonDef = new PolygonDef();

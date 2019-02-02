@@ -10,9 +10,13 @@ namespace namvik.GameObject.Item
     {
         protected BaseItem(BaseGameObject parent): base(parent)
         {
-
         }
 
-        public abstract void OnLooted();
+        public virtual void OnLooted()
+        {
+            Position = Parent.Position;
+        }
+
+        public abstract void OnDestroyed();
     }
 }
