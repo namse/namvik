@@ -27,6 +27,9 @@ namespace namvik.GameObject.Item
         private readonly FiniteStateMachine<ArmorState> _armorStateFSM;
 
         private const int DestroyDelay = 500;
+        private const int SparklingDurationOnWearing = 200;
+        private bool _isSkippingDraw;
+        private const int SparklingBetweenDelay = 100;
 
         public Armor(BaseGameObject parent) : base(parent)
         {
@@ -40,11 +43,11 @@ namespace namvik.GameObject.Item
                 ArmorState.BeforeLoot,
                 new Dictionary<(ArmorState, ArmorState), Action>
                 {
-                    { (ArmorState.BeforeLoot, ArmorState.Wearing), () => { Sparkle(); } },
+                    { (ArmorState.BeforeLoot, ArmorState.Wearing), () => { Sparkle(SparklingDurationOnWearing); } },
                     { (ArmorState.Wearing, ArmorState.Destroyed), async () =>
                     {
                         HasMass = true;
-
+                        Sparkle(DestroyDelay);
                         await Task.Delay(DestroyDelay);
 
                         IsDead = true;
@@ -100,16 +103,30 @@ namespace namvik.GameObject.Item
             _armorStateFSM.ChangeState(ArmorState.Destroyed);
         }
 
-        public async Task Sparkle()
+        public async Task Sparkle(int durationMilliseconds)
         {
-            const int delayBetween = 200;
-            for (var i = 0; i < 3; i += 1)
+            var introDelay = SparklingBetweenDelay;
+
+            await Task.Delay(introDelay);
+
+            var sparklingTimes = (durationMilliseconds - introDelay) / SparklingBetweenDelay;
+            for (var i = 0; i < sparklingTimes; i += 1)
             {
-                _color = Color.Yellow;
-                await Task.Delay(delayBetween);
-                _color = Color.White;
-                await Task.Delay(delayBetween);
+                _isSkippingDraw = true;
+                await Task.Delay(SparklingBetweenDelay);
+                _isSkippingDraw = false;
+                await Task.Delay(SparklingBetweenDelay);
             }
+        }
+
+        public override void Draw(float dt, SpriteBatch spriteBatch)
+        {
+            if (_isSkippingDraw)
+            {
+                return;
+            }
+
+            base.Draw(dt, spriteBatch);
         }
     }
 }
