@@ -61,6 +61,7 @@ namespace namvik.GameObject
         protected Shape MainBodyShape;
         
         public bool IsDead;
+        protected Color _color = Color.White;
 
         protected BaseGameObject(BaseGameObject parent)
         {
@@ -144,7 +145,7 @@ namespace namvik.GameObject
                 Texture,
                 integerPosition,
                 null,
-                Color.White,
+                _color,
                 0,
                 Vector2.Zero,
                 Vector2.One,
@@ -167,7 +168,7 @@ namespace namvik.GameObject
                 Texture,
                 integerPosition,
                 null,
-                Color.White,
+                _color,
                 0,
                 Vector2.Zero,
                 Vector2.One,

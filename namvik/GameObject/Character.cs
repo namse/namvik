@@ -67,6 +67,7 @@ namespace namvik.GameObject
         public void AddItem(BaseItem item)
         {
             _items.Add(item);
+            item.OnLooted();
         }
 
         public void OnHit()

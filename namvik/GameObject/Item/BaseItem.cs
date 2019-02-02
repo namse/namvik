@@ -12,5 +12,7 @@ namespace namvik.GameObject.Item
         {
 
         }
+
+        public abstract void OnLooted();
     }
 }
