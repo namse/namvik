@@ -47,10 +47,15 @@
     <Compile Include="Contact\ContactListener.cs" />
     <Compile Include="Contact\ContactManager.cs" />
     <Compile Include="FiniteStateMachine\FiniteStateMahcine.cs" />
+    <Compile Include="FloatExtension.cs" />
     <Compile Include="GameObject\FpsPrinter.cs" />
     <Compile Include="GameObject\BaseGameObject.cs" />
     <Compile Include="GameObject\Item\Armor.cs" />
     <Compile Include="GameObject\Item\BaseItem.cs" />
+    <Compile Include="GameObject\Particle\BloomEffect.cs" />
+    <Compile Include="GameObject\Particle\ByeByeParticle.cs" />
+    <Compile Include="GameObject\Particle\ByeByeParticleSystem.cs" />
+    <Compile Include="GameObject\Particle\FlareParticle.cs" />
     <Compile Include="KeyboardManager.cs" />
     <Compile Include="GameObject\Monkey.cs" />
     <Compile Include="ScaleBetweenPixelAndMeter.cs" />

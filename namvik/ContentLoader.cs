@@ -13,6 +13,8 @@ namespace namvik
     public enum Contents
     {
         ByeByeEffect,
+        ByeByeParticleEffect,
+        BasicEffect,
     }
 
     public static class ContentLoader
@@ -20,6 +22,8 @@ namespace namvik
         private static readonly Dictionary<Contents, (string, Type)> ContentDescriptions = new Dictionary<Contents, (string, Type)>
         {
             { Contents.ByeByeEffect, ("shader/byeByeEffect", typeof(Effect)) },
+            { Contents.ByeByeParticleEffect, ("shader/byeByeParticleEffect", typeof(Effect)) },
+            { Contents.BasicEffect, ("shader/basicEffect", typeof(Effect)) },
         };
         private static readonly Dictionary<Contents,  object> ContentMap = new Dictionary<Contents, object>();
 

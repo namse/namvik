@@ -9,6 +9,7 @@ using Box2DX.Dynamics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
 using MonoGame.Extended.Sprites;
 using namvik.Tile;
 using Color = Microsoft.Xna.Framework.Color;
@@ -90,7 +91,7 @@ namespace namvik.GameObject
 
             Parent?.DetachChild(this);
 
-            Children.ForEach(child => child.Destroy());
+            Children.ForEach(child => child.Destroy()); // TODO FIX BUG HERE!! ALREADY CHILD HAS BEEN REMOVED ON DetachDChild!!
         }
 
         protected virtual void MakeBox2DBoxWithTexture()
@@ -142,6 +143,11 @@ namespace namvik.GameObject
             }
         }
 
+        public virtual void PreDraw(float dt, GraphicsDevice device, Camera2D camera)
+        {
+
+        }
+
         public virtual void Draw(float dt, SpriteBatch spriteBatch)
         {
             DrawTexture(dt, spriteBatch, Texture);
@@ -150,6 +156,11 @@ namespace namvik.GameObject
 
         protected void DrawTexture(float dt, SpriteBatch spriteBatch, Texture2D texture)
         {
+            if (texture is null)
+            {
+                return;
+            }
+
             var integerPosition = new Vector2((int)Position.X, (int)Position.Y);
 
             spriteBatch.Draw(

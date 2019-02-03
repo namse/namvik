@@ -96,11 +96,23 @@
 /processorParam:TextureFormat=Color
 /build:map/map1_06.png
 
+#begin shader/basicEffect.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:shader/basicEffect.fx
+
 #begin shader/byeByeEffect.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:shader/byeByeEffect.fx
+
+#begin shader/byeByeParticleEffect.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:shader/byeByeParticleEffect.fx
 
 #begin sprite/armor.png
 /importer:TextureImporter

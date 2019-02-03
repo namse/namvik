@@ -17,7 +17,10 @@ namespace namvik
     public class Game1 : Game
     {
         public static GraphicsDevice Device;
-        GraphicsDeviceManager _graphics;
+        public static Camera2D Camera;
+        public static GraphicsDeviceManager Graphics;
+        public static Vector2 CenterOfScreen;
+        private readonly GraphicsDeviceManager _graphics;
         public SpriteBatch _spriteBatch;
         private Map _map;
         private Camera2D _camera;
@@ -30,6 +33,8 @@ namespace namvik
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
+            _graphics.GraphicsProfile = GraphicsProfile.HiDef;
+            Graphics = _graphics;
             Content.RootDirectory = "Content";
         }
 
@@ -38,6 +43,7 @@ namespace namvik
             base.Initialize();
 
             Device = GraphicsDevice;
+            
 
             var windowWidth = 1000;
             var windowHeight = 1000;
@@ -50,8 +56,8 @@ namespace namvik
 
             var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, windowWidth, windowHeight);
             _camera = new Camera2D(viewportAdapter);
-
-
+            Camera = _camera;
+            
             _map = new Map();
             _map.Initialize(Content, _spriteBatch);
 
@@ -118,6 +124,12 @@ namespace namvik
 
             base.Update(gameTime);
 
+            if (!(_character is null))
+            {
+                CenterOfScreen = _character.Position;
+            }
+            
+
             BaseGameObject.GameObjects.ForEach(gameObject =>
             {
                 if (gameObject.IsDead)
@@ -158,6 +170,11 @@ namespace namvik
         protected override void Draw(GameTime gameTime)
         {
             var dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            BaseGameObject.GameObjects.ForEach(gameObject =>
+            {
+                gameObject.PreDraw(dt, Device, _camera);
+            });
 
             _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 

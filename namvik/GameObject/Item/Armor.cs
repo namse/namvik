@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using namvik.FiniteStateMachine;
+using namvik.GameObject.Particle;
 using namvik.Tile;
 using Color = Microsoft.Xna.Framework.Color;
 using Math = System.Math;
@@ -53,10 +54,20 @@ namespace namvik.GameObject.Item
         private int frames;
         private List<Dot> Dots = GenerateDots(10);
 
+        private ByeByeParticleSystem _byeByeParticleSystem;
+        private ByeByeParticle _byeByeParticle;
+        private BloomEffect _bloomEffect;
         public Armor(BaseGameObject parent) : base(parent)
         {
             _zigZagTexture = new Texture2D(Game1.Device, 1, Texture.Height);
             _mosaicTexture = new Texture2D(Game1.Device, Texture.Width, Texture.Height);
+            _byeByeParticleSystem = new ByeByeParticleSystem(this);
+
+            _byeByeParticleSystem.MakeParticlesWithTexture(Texture);
+            var center = new Vector2(0, -10);
+            //_byeByeParticle = new ByeByeParticle(this, center, center);
+            //_bloomEffect = new BloomEffect(this, new List<ByeByeParticle>{ _byeByeParticle });
+
             categoryBits = CategoryBits.Armor;
             maskBits = MaskBits.Armor;
 
@@ -251,10 +262,19 @@ namespace namvik.GameObject.Item
             }
             _zigZagTexture.SetData(data);
 
+
+            spriteBatch.End();
+
+            spriteBatch.Begin(SpriteSortMode.Immediate, transformMatrix: Game1.Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp);
+
             _byeByeEffect.Parameters["ZigZagTexture"].SetValue(_zigZagTexture);
-            _byeByeEffect.CurrentTechnique.Passes[0].Apply();
+            //_byeByeEffect.CurrentTechnique.Passes[0].Apply();
             base.Draw(dt, spriteBatch);
             DrawTexture(dt, spriteBatch, _mosaicTexture);
+
+            spriteBatch.End();
+
+            spriteBatch.Begin(SpriteSortMode.Immediate, transformMatrix: Game1.Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp);
         }
     }
 }
