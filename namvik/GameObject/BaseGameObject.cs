@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using System.Runtime.InteropServices;
 using Box2DX.Collision;
 using Box2DX.Common;
@@ -143,10 +144,16 @@ namespace namvik.GameObject
 
         public virtual void Draw(float dt, SpriteBatch spriteBatch)
         {
+            DrawTexture(dt, spriteBatch, Texture);
+            DrawPolygons(dt, spriteBatch);
+        }
+
+        protected void DrawTexture(float dt, SpriteBatch spriteBatch, Texture2D texture)
+        {
             var integerPosition = new Vector2((int)Position.X, (int)Position.Y);
 
             spriteBatch.Draw(
-                Texture,
+                texture,
                 integerPosition,
                 null,
                 _color,
@@ -155,8 +162,6 @@ namespace namvik.GameObject
                 Vector2.One,
                 IsSeeingLeft ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
                 0f);
-
-            DrawPolygons(dt, spriteBatch);
         }
 
         private void DrawPolygons(float dt, SpriteBatch spriteBatch)

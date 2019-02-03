@@ -96,6 +96,12 @@
 /processorParam:TextureFormat=Color
 /build:map/map1_06.png
 
+#begin shader/byeByeEffect.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:shader/byeByeEffect.fx
+
 #begin sprite/armor.png
 /importer:TextureImporter
 /processor:TextureProcessor

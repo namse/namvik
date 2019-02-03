@@ -16,6 +16,7 @@ namespace namvik
 {
     public class Game1 : Game
     {
+        public static GraphicsDevice Device;
         GraphicsDeviceManager _graphics;
         public SpriteBatch _spriteBatch;
         private Map _map;
@@ -35,6 +36,8 @@ namespace namvik
         protected override void Initialize()
         {
             base.Initialize();
+
+            Device = GraphicsDevice;
 
             var windowWidth = 1000;
             var windowHeight = 1000;
@@ -99,6 +102,8 @@ namespace namvik
             TextureLoader.LoadTexture(typeof(Character), Content, "sprite/character");
             TextureLoader.LoadTexture(typeof(Monkey), Content, "sprite/monkey");
             TextureLoader.LoadTexture(typeof(Armor), Content, "sprite/armor");
+
+            ContentLoader.LoadContents(Content);
         }
 
         protected override void UnloadContent()
@@ -156,7 +161,7 @@ namespace namvik
 
             _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _spriteBatch.Begin(transformMatrix: _camera.GetViewMatrix(), samplerState: SamplerState.PointClamp);
+            _spriteBatch.Begin(SpriteSortMode.Immediate, transformMatrix: _camera.GetViewMatrix(), samplerState: SamplerState.PointClamp);
 
             _map.Draw(_camera, _spriteBatch);
 
