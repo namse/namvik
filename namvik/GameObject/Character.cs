@@ -103,7 +103,7 @@ namespace namvik.GameObject
                 _timeSinceNotGround = 0;
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            if (Keyboard.GetState().IsKeyDown(Keys.A) && Keyboard.GetState().IsKeyDown(Keys.Right))
             {
                 if (CanIJump)
                 {
@@ -112,9 +112,9 @@ namespace namvik.GameObject
                     _isStartingJump = true;
                 }
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.Left) || Keyboard.GetState().IsKeyDown(Keys.Right))
+            else if (Keyboard.GetState().IsKeyDown(Keys.A) || Keyboard.GetState().IsKeyDown(Keys.Right))
             {
-                var isLeftMove = Keyboard.GetState().IsKeyDown(Keys.Left);
+                var isLeftMove = Keyboard.GetState().IsKeyDown(Keys.A);
                 IsSeeingLeft = isLeftMove;
                 var velocity = Body.GetLinearVelocity();
                 var moveDirection = isLeftMove ? -1 : 1;
@@ -158,7 +158,7 @@ namespace namvik.GameObject
                 Body.SetLinearVelocity(velocity);
             }
 
-            if (Keyboard.GetState().IsKeyUp(Keys.Left) && Keyboard.GetState().IsKeyUp(Keys.Right))
+            if (Keyboard.GetState().IsKeyUp(Keys.A) && Keyboard.GetState().IsKeyUp(Keys.Right))
             {
                 var velocity = Body.GetLinearVelocity();
 
